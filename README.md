@@ -131,7 +131,16 @@ echo "$RESEND_API_KEY" | vercel env add RESEND_API_KEY preview
 
 echo "hello@vantriq.com" | vercel env add CONTACT_TO_EMAIL production
 echo "hello@vantriq.com" | vercel env add CONTACT_TO_EMAIL preview
+
+CONTACT_TOKEN_SECRET=$(openssl rand -hex 32)
+echo "$CONTACT_TOKEN_SECRET" | vercel env add CONTACT_TOKEN_SECRET production
+echo "$CONTACT_TOKEN_SECRET" | vercel env add CONTACT_TOKEN_SECRET preview
 ```
+
+Generate a **separate** `CONTACT_TOKEN_SECRET` for Preview if you want
+Preview-issued tokens to be unusable against Production (optional, but
+tidy) — otherwise reusing the same value for both is fine, it doesn't
+need to match anything else the way the Turso/Resend credentials do.
 
 Use the **production** Turso database's credentials for the
 Production environment, and either the same or the `vantriq-dev`
@@ -150,9 +159,11 @@ vercel env ls
 cp .env.example .env
 ```
 
-Fill in `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `RESEND_API_KEY`, and
-`CONTACT_TO_EMAIL` (use the `vantriq-dev` database's credentials here
-if you created one). `.env` is gitignored — never commit real values.
+Fill in `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `RESEND_API_KEY`,
+`CONTACT_TO_EMAIL`, and `CONTACT_TOKEN_SECRET` (use the `vantriq-dev`
+database's credentials here if you created one; for the token secret,
+`openssl rand -hex 32` or reuse the one you generated for Vercel above).
+`.env` is gitignored — never commit real values.
 
 ### 5. Run locally
 

@@ -1,24 +1,34 @@
 const form = document.getElementById('contact-form');
 const statusEl = document.getElementById('form-status');
+const tokenField = document.getElementById('contact_token');
 
-// Time trap: this script runs shortly after the page loads, so this is
-// effectively "when the form became available to fill in". Bots that
-// fetch the page and POST immediately produce a tiny elapsed time; the
-// server rejects anything under its minimum (see src/lib/validateContact.ts).
-const formRenderedAt = Date.now();
+// Server-signed time-trap token: fetched once on load, verified
+// server-side on submit (see src/lib/contactToken.ts). Awaited before
+// reading form data on submit so a fast human doesn't race the fetch.
+const tokenPromise = fetch('/api/contact-token')
+  .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`token fetch failed: ${res.status}`))))
+  .then((data) => {
+    if (tokenField) tokenField.value = data.token;
+    return data.token;
+  })
+  .catch((error) => {
+    console.error('Failed to fetch contact token:', error);
+    return null;
+  });
 
 form?.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!statusEl) return;
 
   const submitButton = form.querySelector('button[type="submit"]');
-  const formData = new FormData(form);
-  const payload = Object.fromEntries(formData.entries());
-  payload.elapsed_ms = Date.now() - formRenderedAt;
-
   submitButton?.setAttribute('disabled', 'true');
   statusEl.classList.remove('hidden', 'text-feedback-error', 'text-feedback-success');
   statusEl.textContent = 'Sending…';
+
+  await tokenPromise;
+
+  const formData = new FormData(form);
+  const payload = Object.fromEntries(formData.entries());
 
   try {
     const response = await fetch('/api/contact', {

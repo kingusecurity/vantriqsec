@@ -76,6 +76,15 @@ import MapPin from '@/components/icons/MapPin.astro';
           <input id="company_website" name="company_website" type="text" tabindex="-1" autocomplete="off" />
         </div>
 
+        <!--
+          Server-signed time-trap token, fetched from /api/contact-token
+          on load and populated here by contact-form.js. This page stays
+          prerendered static — issuing the token requires a fresh
+          timestamp+signature per request, which would have forced this
+          page to render dynamically if done here instead.
+        -->
+        <input type="hidden" id="contact_token" name="contact_token" value="" />
+
         <div id="form-status" role="status" aria-live="polite" class="hidden text-sm"></div>
 
         <button

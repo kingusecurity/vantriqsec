@@ -3,6 +3,7 @@ import { db } from '@/db/client';
 import { contactSchema } from '@/lib/validateContact';
 import { isRateLimited } from '@/lib/rateLimit';
 import { sendContactNotification } from '@/lib/email';
+import { verifyContactToken } from '@/lib/contactToken';
 
 export const prerender = false;
 
@@ -26,6 +27,15 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     // Honeypot trip (or any validation failure) — reject without
     // leaking which field failed to a potential bot.
     return jsonResponse({ error: 'Please check your submission and try again.' }, 400);
+  }
+
+  // Server-authoritative time trap: verifies a signature only this
+  // server could have issued (see /api/contact-token), so — unlike a
+  // client-timed check — a bot posting directly to this endpoint can't
+  // just send a fake "I waited long enough" value.
+  const tokenCheck = verifyContactToken(parsed.data.contact_token);
+  if (!tokenCheck.ok) {
+    return jsonResponse({ error: tokenCheck.message }, 400);
   }
 
   const ip = clientAddress || 'unknown';
