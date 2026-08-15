@@ -52,6 +52,7 @@ async function main() {
         email: testEmail,
         message: testMessage,
         company_website: '', // honeypot — must stay empty
+        elapsed_ms: 5000, // time trap — must be above the server's minimum
       }),
     });
     body = await response.json().catch(() => null);

@@ -21,7 +21,13 @@ Nothing is loaded from a CDN at runtime.
   separate static builds of the identical OFL-licensed fonts — Space
   Grotesk Bold from the original designer's repo
   (https://github.com/floriankarsten/space-grotesk/tree/master/fonts/ttf/static),
-  Inter Medium from Google's static font build (fonts.gstatic.com).
+  Inter Medium from Google's static font build (fonts.gstatic.com). The
+  OFL requires the license text to ship alongside the font files
+  themselves, not just be mentioned here — the actual license text for
+  each is at
+  [`scripts/assets/fonts/SpaceGrotesk-OFL.txt`](scripts/assets/fonts/SpaceGrotesk-OFL.txt)
+  and
+  [`scripts/assets/fonts/Inter-OFL.txt`](scripts/assets/fonts/Inter-OFL.txt).
 
 ## Icons
 

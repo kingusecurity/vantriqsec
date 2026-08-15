@@ -1,0 +1,24 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Button from '@/components/Button.astro';
+import AlertTriangle from '@/components/icons/AlertTriangle.astro';
+---
+
+<BaseLayout
+  title="Page Not Found"
+  description="The page you're looking for doesn't exist."
+>
+  <section class="mx-auto flex max-w-2xl flex-col items-center px-6 py-32 text-center">
+    <AlertTriangle class="h-12 w-12 text-brand-500" />
+    <p class="mt-6 text-sm font-semibold uppercase tracking-wide text-brand-500">404</p>
+    <h1 class="mt-2 text-3xl font-bold sm:text-4xl">Page not found</h1>
+    <p class="mt-4 text-lg text-text-secondary">
+      The page you're looking for doesn't exist or may have moved.
+    </p>
+    <div class="mt-8">
+      <Button href="/" variant="primary">Back to home</Button>
+    </div>
+  </section>
+</BaseLayout>

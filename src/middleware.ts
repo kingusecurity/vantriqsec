@@ -3,7 +3,8 @@ import { defineMiddleware } from 'astro:middleware';
 const CSP =
   "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; " +
   "img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'self'; " +
-  "form-action 'self'; frame-ancestors 'none'";
+  "form-action 'self'; frame-ancestors 'none'; object-src 'none'; frame-src 'none'; " +
+  "upgrade-insecure-requests";
 
 export const onRequest = defineMiddleware(async (_context, next) => {
   const response = await next();

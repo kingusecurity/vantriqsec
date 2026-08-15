@@ -1,6 +1,12 @@
 const form = document.getElementById('contact-form');
 const statusEl = document.getElementById('form-status');
 
+// Time trap: this script runs shortly after the page loads, so this is
+// effectively "when the form became available to fill in". Bots that
+// fetch the page and POST immediately produce a tiny elapsed time; the
+// server rejects anything under its minimum (see src/lib/validateContact.ts).
+const formRenderedAt = Date.now();
+
 form?.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!statusEl) return;
@@ -8,6 +14,7 @@ form?.addEventListener('submit', async (event) => {
   const submitButton = form.querySelector('button[type="submit"]');
   const formData = new FormData(form);
   const payload = Object.fromEntries(formData.entries());
+  payload.elapsed_ms = Date.now() - formRenderedAt;
 
   submitButton?.setAttribute('disabled', 'true');
   statusEl.classList.remove('hidden', 'text-feedback-error', 'text-feedback-success');

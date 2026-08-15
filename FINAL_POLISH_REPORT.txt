@@ -1,0 +1,110 @@
+VANTRIQ — FINAL POLISH BEFORE DEPLOY REPORT
+Prepared: 2026-08-15
+Commit: 190da95 "Final polish: remove phone field, add branded OG image, verify deploy"
+
+
+1. NO LocalBusiness JSON-LD
+----------------------------
+Confirmed. Only Organization schema exists; grepped src/ for
+LocalBusiness / streetAddress / PostalAddress — zero matches. Footer
+and contact page still show city-level "Lahore, Pakistan" only, no
+street address anywhere.
+
+
+2. PHONE FIELD REMOVED
+------------------------
+Deleted from Footer.astro and contact.astro, plus the now-unused
+Phone.astro icon component (also removed from NOTICE.md's icon list).
+Contact page's info column would have looked sparse with only 2 rows
+next to the form, so a line was added directing visitors to the form
+as the fastest path — reads as intentional, not missing something.
+
+
+3. OG IMAGE
+------------
+Built scripts/generate-og-image.mjs, generated public/og.png at
+exactly 1200x630 (verified via sharp metadata check baked into the
+script itself).
+
+Real snag hit along the way: resvg (the SVG renderer used) silently
+ignores variable-font weight axes and doesn't decode WOFF2 — the first
+attempt rendered zero visible text using the site's actual @fontsource
+files (no error thrown, just blank glyphs). Fixed by vendoring static
+TTF instances (Space Grotesk Bold, Inter Medium — same OFL-licensed
+typefaces, just a different build) under scripts/assets/fonts/, used
+only by this generation script, documented in NOTICE.md.
+
+Wired into BaseLayout.astro for og:image/twitter:image with absolute
+URLs via Astro.site, and switched twitter:card to summary_large_image
+now that a real image exists.
+
+Image was visually reviewed before committing — dark background
+(#0a0a0a), red accent glow (#dc2626), shield mark, "VANTRIQ" wordmark
+in Space Grotesk, tagline beneath in Inter, all pulled from existing
+design tokens and footer copy. No stock or AI imagery used.
+
+
+4. DEPLOY DRY RUN
+-------------------
+- `vercel build` completed locally: {"status": "ok", ...}
+  (Needed a manual dummy .vercel/project.json first — the CLI tried to
+  auto-create a *remote* Vercel project and choked on deriving a valid
+  project name from the Windows path D:\Vantriq; unrelated to the app
+  itself. Cleaned up afterward, not committed — .vercel/ is gitignored
+  anyway.)
+
+- Env vars the code expects (from import.meta.env usage + env.d.ts):
+    TURSO_DATABASE_URL
+    TURSO_AUTH_TOKEN
+    RESEND_API_KEY
+    CONTACT_TO_EMAIL
+  All four currently UNSET — no .env file exists in the project.
+  Build succeeds anyway because they're only read inside the
+  /api/contact function at request time, not at build time.
+
+- Serverless functions: exactly ONE (_render.func). /api/contact is
+  the only *application* route it serves — it also catches Astro's
+  internal /_image optimizer and /404 fallback, which aren't pages you
+  wrote. All four content pages (/, /about, /contact, /services)
+  confirmed prerendered to static HTML.
+
+- Headers as actually served (from .vercel/output/config.json, matches
+  vercel.json exactly):
+
+    Content-Security-Policy: default-src 'self'; script-src 'self';
+      style-src 'self' 'unsafe-inline'; img-src 'self' data:;
+      font-src 'self'; connect-src 'self'; base-uri 'self';
+      form-action 'self'; frame-ancestors 'none'
+    Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+    X-Frame-Options: DENY
+    X-Content-Type-Options: nosniff
+    Referrer-Policy: strict-origin-when-cross-origin
+
+  (src/middleware.ts applies the same set again at the app layer for
+  the dynamic function — not separately visible in this static config,
+  but present in the code, kept as defense in depth.)
+
+
+5. FINAL GATE
+---------------
+- astro check: 0 errors
+- npm run build: clean
+- TODO/FIXME sweep outside .env.example: two pre-existing ones remain
+  (see below). Did not fabricate values to force a zero count, since
+  that would contradict the "I'll supply real values" instruction from
+  the prior placeholder-sweep pass.
+
+
+STILL NEEDS A REAL VALUE FROM YOU
+------------------------------------
+- astro.config.mjs — the site domain (https://vantriq.com), also baked
+  into robots.txt's sitemap line and every canonical/OG/sitemap URL.
+- src/components/OrganizationSchema.astro — sameAs social handles,
+  currently https://x.com/TODO_vantriq_set_real_handle and the
+  LinkedIn equivalent.
+- Everything from the last placeholder sweep is still open:
+  hello@vantriq.com, notifications@vantriq.com, security@vantriq.com,
+  "Lahore, Pakistan" (city-level only, per the LocalBusiness decision
+  above).
+- Env vars for a real deploy: Turso database + Resend API key/verified
+  domain, per the README's deploy checklist.

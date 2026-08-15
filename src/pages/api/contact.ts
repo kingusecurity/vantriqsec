@@ -64,7 +64,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   }
 
   // Best-effort — the submission is already safely stored above.
-  await sendContactNotification({ name, email, message, company_website: '' });
+  await sendContactNotification(parsed.data);
 
   return jsonResponse({ ok: true }, 200);
 };
