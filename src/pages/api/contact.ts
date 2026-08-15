@@ -14,7 +14,7 @@ function jsonResponse(body: unknown, status: number): Response {
   });
 }
 
-export const POST: APIRoute = async ({ request, clientAddress }) => {
+export const POST: APIRoute = async ({ request }) => {
   let payload: unknown;
   try {
     payload = await request.json();
@@ -33,12 +33,20 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   // server could have issued (see /api/contact-token), so — unlike a
   // client-timed check — a bot posting directly to this endpoint can't
   // just send a fake "I waited long enough" value.
-  const tokenCheck = verifyContactToken(parsed.data.contact_token);
+  const tokenCheck = await verifyContactToken(parsed.data.contact_token);
   if (!tokenCheck.ok) {
     return jsonResponse({ error: tokenCheck.message }, 400);
   }
 
-  const ip = clientAddress || 'unknown';
+  // Astro.clientAddress is not implemented by @astrojs/cloudflare — it
+  // throws at runtime ("not available in the @astrojs/cloudflare
+  // adapter"), discovered by actually running this under the Workers
+  // runtime, not from type-checking (the property type-checks fine on
+  // every adapter regardless of whether it's implemented). Cloudflare
+  // sets CF-Connecting-IP at its edge before the request reaches the
+  // Worker — clients can't spoof it — so that's the real source of truth
+  // here instead.
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
 
   let limited: boolean;
   try {

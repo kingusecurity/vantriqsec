@@ -1,7 +1,12 @@
 import { Resend } from 'resend';
+import { env } from 'cloudflare:workers';
 import type { ContactInput } from '@/lib/validateContact';
 
-const resend = new Resend(import.meta.env.RESEND_API_KEY);
+// Verified directly against the bundled SDK source (not assumed): resend,
+// and its two dependencies postal-mime and standardwebhooks, contain zero
+// node:*/fs/http/crypto imports — it's fetch()-based and Workers-safe as
+// installed, no REST-call rewrite needed.
+const resend = new Resend(env.RESEND_API_KEY);
 
 /**
  * Best-effort notification email. The contact submission is already
@@ -10,7 +15,7 @@ const resend = new Resend(import.meta.env.RESEND_API_KEY);
  * never cause a lost lead or a failed request for the visitor.
  */
 export async function sendContactNotification(input: ContactInput): Promise<void> {
-  const toEmail = import.meta.env.CONTACT_TO_EMAIL;
+  const toEmail = env.CONTACT_TO_EMAIL;
 
   try {
     const { error } = await resend.emails.send({

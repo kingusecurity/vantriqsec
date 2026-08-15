@@ -1,15 +1,15 @@
 # Vantriq
 
-Marketing site for Vantriq — Astro + Tailwind CSS v4, deployed
-to Vercel, contact form backed by Turso (libSQL) and Resend.
+Marketing site for Vantriq — Astro + Tailwind CSS v4, deployed to
+Cloudflare Workers, contact form backed by Turso (libSQL) and Resend.
 
 ## Stack
 
-- [Astro](https://astro.build) (server output, `@astrojs/vercel` adapter)
+- [Astro](https://astro.build) (server output, `@astrojs/cloudflare` adapter)
 - Tailwind CSS v4 (`@tailwindcss/vite`, CSS-first tokens in
   `src/styles/global.css`)
-- [Turso](https://turso.tech) (`@libsql/client`) — contact submissions
-  + rate-limit state
+- [Turso](https://turso.tech) (`@libsql/client/web` — the Workers
+  entrypoint, not the Node build) — contact submissions + rate-limit state
 - [Resend](https://resend.com) — contact notification email
 - `zod` for form validation
 - Self-hosted fonts (`@fontsource/inter`, `@fontsource/space-grotesk`)
@@ -43,7 +43,8 @@ turso db tokens create vantriq
 ```
 
 Save the URL from `turso db show` and the token from `turso db tokens
-create` — you'll paste them into `.env` (step 4) and Vercel (step 3).
+create` — you'll paste them into `.dev.vars` (step 4) and as Worker
+secrets (step 3).
 
 Apply the schema:
 
@@ -112,58 +113,56 @@ Look for `"status": "verified"` before relying on `notifications@vantriq.com`
 to actually deliver — sends from an unverified domain will fail or land
 in spam.
 
-### 3. Vercel — environment variables
+### 3. Cloudflare — Worker secrets
 
-Set each variable for both **Production** and **Preview** (the CLI
-prompts for the value on stdin, or pipe it):
+Requires a Cloudflare account and `wrangler login` once
+(`npx wrangler login`). Secrets are per-Worker, not per-environment the
+way Vercel's Production/Preview split works — set each one with
+`wrangler secret put` (prompts for the value, or pipe it):
 
 ```bash
-vercel link
-
-echo "$TURSO_DATABASE_URL" | vercel env add TURSO_DATABASE_URL production
-echo "$TURSO_DATABASE_URL" | vercel env add TURSO_DATABASE_URL preview
-
-echo "$TURSO_AUTH_TOKEN" | vercel env add TURSO_AUTH_TOKEN production
-echo "$TURSO_AUTH_TOKEN" | vercel env add TURSO_AUTH_TOKEN preview
-
-echo "$RESEND_API_KEY" | vercel env add RESEND_API_KEY production
-echo "$RESEND_API_KEY" | vercel env add RESEND_API_KEY preview
-
-echo "hello@vantriq.com" | vercel env add CONTACT_TO_EMAIL production
-echo "hello@vantriq.com" | vercel env add CONTACT_TO_EMAIL preview
+echo "$TURSO_DATABASE_URL" | npx wrangler secret put TURSO_DATABASE_URL
+echo "$TURSO_AUTH_TOKEN" | npx wrangler secret put TURSO_AUTH_TOKEN
+echo "$RESEND_API_KEY" | npx wrangler secret put RESEND_API_KEY
+echo "hello@vantriq.com" | npx wrangler secret put CONTACT_TO_EMAIL
 
 CONTACT_TOKEN_SECRET=$(openssl rand -hex 32)
-echo "$CONTACT_TOKEN_SECRET" | vercel env add CONTACT_TOKEN_SECRET production
-echo "$CONTACT_TOKEN_SECRET" | vercel env add CONTACT_TOKEN_SECRET preview
+echo "$CONTACT_TOKEN_SECRET" | npx wrangler secret put CONTACT_TOKEN_SECRET
 ```
 
-Generate a **separate** `CONTACT_TOKEN_SECRET` for Preview if you want
-Preview-issued tokens to be unusable against Production (optional, but
-tidy) — otherwise reusing the same value for both is fine, it doesn't
-need to match anything else the way the Turso/Resend credentials do.
+Alternative: the Cloudflare dashboard → Workers & Pages → the `vantriq`
+Worker → Settings → Variables and Secrets → Add.
 
-Use the **production** Turso database's credentials for the
-Production environment, and either the same or the `vantriq-dev`
-database's credentials for Preview — your call on whether preview
-deploys should write into real data.
-
-Verify what's set (values are masked):
+Verify what's set (values are never shown, only names):
 
 ```bash
-vercel env ls
+npx wrangler secret list
 ```
 
 ### 4. Local environment
 
 ```bash
-cp .env.example .env
+cp .dev.vars.example .dev.vars
 ```
 
 Fill in `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `RESEND_API_KEY`,
 `CONTACT_TO_EMAIL`, and `CONTACT_TOKEN_SECRET` (use the `vantriq-dev`
 database's credentials here if you created one; for the token secret,
-`openssl rand -hex 32` or reuse the one you generated for Vercel above).
-`.env` is gitignored — never commit real values.
+`openssl rand -hex 32` or reuse the one you generated in step 3).
+`.dev.vars` is gitignored — never commit real values. This is
+Wrangler's local-secrets convention file; `astro dev` reads it directly
+(it runs under Cloudflare's own Vite plugin + `workerd` runtime, not
+plain Node), and `npm run test:contact` reads the same file via Node's
+`--env-file` flag — one local secrets file, not two.
+
+Generate the local type declarations (`worker-configuration.d.ts` — this
+is gitignored and derived partly from `.dev.vars`, so it isn't committed
+and has to be generated locally; re-run this any time `wrangler.jsonc`
+or `.dev.vars` change):
+
+```bash
+npx wrangler types
+```
 
 ### 5. Run locally
 
@@ -174,13 +173,15 @@ npm run dev
 ### 6. Deploy
 
 ```bash
-vercel --prod
+npm run deploy
 ```
 
-Security headers are applied both via `vercel.json` and
-`src/middleware.ts` (the latter also covers `/api/contact`, which
-`vercel.json`'s static header rules don't reach on some routing
-configurations — kept as belt-and-suspenders).
+(`astro build && wrangler deploy` — see `package.json`.)
+
+Security headers are applied both via `public/_headers` and
+`src/middleware.ts` (the latter also covers `/api/contact` and
+`/api/contact-token`, which `_headers`' static rules don't reach —
+kept as belt-and-suspenders).
 
 ## Content Security Policy
 
@@ -202,10 +203,14 @@ policy and requires an explicit CSP change first:**
 
 **Where the header is defined (update both, they must stay in sync):**
 
-- `vercel.json` — static header rule applied by Vercel's edge config.
-- `src/middleware.ts` — applied per-request in the Astro/Node runtime,
-  which also covers `/api/contact` (routes `vercel.json`'s static rules
-  don't reliably reach in every routing configuration).
+- `public/_headers` — Cloudflare's static header-rule file, applied at
+  the edge to every response including prerendered static pages.
+- `src/middleware.ts` — applied per-request inside the Worker itself,
+  which also covers `/api/contact` and `/api/contact-token`.
+
+Both are programmatically diffed to confirm they match whenever the
+policy changes — see the CSP constant in `src/middleware.ts` and the
+`Content-Security-Policy` line in `public/_headers`.
 
 ## Notes
 
@@ -216,4 +221,21 @@ policy and requires an explicit CSP change first:**
 - Contact submissions are always written to Turso first; the Resend
   email is a best-effort notification on top, so an email-provider
   outage never loses a submission or fails the visitor's request.
+- `Astro.clientAddress` is **not implemented** by `@astrojs/cloudflare`
+  (it throws at runtime, discovered by actually running this under
+  `workerd`, not from type-checking). `src/pages/api/contact.ts` reads
+  the client IP from the `CF-Connecting-IP` header instead — Cloudflare
+  sets it at the edge before the request reaches the Worker, so it
+  can't be spoofed by the client.
+- Session support and Cloudflare Images are both explicitly disabled in
+  `astro.config.mjs` (`session: false`, adapter `imageService:
+  'passthrough'`) — the adapter silently auto-provisions a KV namespace
+  and an Images binding otherwise, for features this project never uses.
+- `nodejs_compat` is enabled in `wrangler.jsonc` as a defensive default
+  (every official Astro-on-Cloudflare example includes it), though this
+  project's own code doesn't currently need it — verified empirically by
+  running the dev server and a full build with the flag removed; both
+  worked. `src/lib/contactToken.ts` uses Web Crypto (`crypto.subtle`),
+  not `node:crypto`, specifically so it doesn't depend on this flag.
 - See `NOTICE.md` for third-party font and icon licenses.
+- See `SECURITY.md` for accepted-risk dependency advisories.

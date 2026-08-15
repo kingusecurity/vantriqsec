@@ -1,3 +1,8 @@
+# Wrangler's local-secrets convention file. Copy to .dev.vars (gitignored)
+# for local `astro dev`/`wrangler dev` — Node's `--env-file` flag also
+# reads this same file for scripts/test-contact.mjs, so there's one local
+# secrets file, not two.
+
 # Turso (libSQL) — create with `turso db create vantriq`
 # then `turso db show vantriq --url` and `turso db tokens create vantriq`
 TURSO_DATABASE_URL=libsql://your-database-name.turso.io

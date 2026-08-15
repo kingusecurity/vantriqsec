@@ -11,26 +11,22 @@ notes. Point it at a real, monitored address before launch.)
 
 ## Accepted risks
 
-### path-to-regexp ReDoS (GHSA-9wv6-86v2-598j)
+None currently. `npm audit` reports 0 vulnerabilities as of 2026-08-15.
 
-- **Status:** Accepted, not fixed.
-- **Recorded:** 2026-08-15.
-- **Where:** Transitive dependency — `@astrojs/vercel` → `@vercel/routing-utils`
-  → `path-to-regexp` (4.0.0–6.2.2, vulnerable range). Surfaced by `npm audit`.
-- **Why accepted:**
-  - `path-to-regexp` is used by Vercel's build tooling to process this
-    project's own static route definitions at build time. It does not
-    parse attacker-controlled input at runtime — visitors never supply
-    strings that reach this code path.
-  - No fix is currently available upstream: the latest `@vercel/routing-utils`
-    (checked 2026-08-15) still depends on the vulnerable `path-to-regexp`
-    range. `npm audit fix --force` only offers a downgrade of
-    `@astrojs/vercel` (11.0.5 → 8.0.4), which does not resolve the
-    advisory and is a regression in every other respect.
-- **Re-check:** Quarterly, or immediately if `npm audit` reports a new
-  advisory in this chain. Run `npm audit` and `npm view @vercel/routing-utils
-  dependencies.path-to-regexp` to see whether a non-breaking fix has
-  landed upstream.
+### Resolved: path-to-regexp ReDoS (GHSA-9wv6-86v2-598j)
+
+- **Status:** Resolved by the Cloudflare migration (2026-08-15) — not by
+  an upstream patch to the original dependency chain.
+- **Was:** Transitive dependency — `@astrojs/vercel` → `@vercel/routing-utils`
+  → `path-to-regexp` (4.0.0–6.2.2, vulnerable range).
+- **Why it went away:** Removing `@astrojs/vercel` removed
+  `@vercel/routing-utils` entirely. `path-to-regexp` is still present in
+  the tree (now via `wrangler` → `path-to-regexp@6.3.0`), but 6.3.0 is
+  outside the vulnerable range — confirmed via `npm ls path-to-regexp`
+  and `npm audit` (0 vulnerabilities) after the migration.
+- **Re-check anyway:** `wrangler` is a devDependency that will get
+  updated over time; re-run `npm audit` after any `wrangler` bump to
+  confirm this stays resolved.
 
 ## Design decisions relevant to security
 

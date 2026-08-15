@@ -9,7 +9,7 @@ import { createContactToken } from '@/lib/contactToken';
 export const prerender = false;
 
 export const GET: APIRoute = async () => {
-  const token = createContactToken();
+  const token = await createContactToken();
   return new Response(JSON.stringify({ token }), {
     status: 200,
     headers: {
