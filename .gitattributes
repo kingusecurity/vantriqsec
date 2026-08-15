@@ -1,0 +1,9 @@
+* text=auto
+
+# Explicit, so text=auto's auto-detection can never misfire on these —
+# the actual binary assets in this repo.
+*.ttf binary
+*.woff binary
+*.woff2 binary
+*.png binary
+*.ico binary

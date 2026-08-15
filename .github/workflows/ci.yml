@@ -1,0 +1,40 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history — needed by the secret-scan step below
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npx astro check
+      - run: npm run build
+
+      - name: Secret scan (full history)
+        run: |
+          # Narrower than a plain "does this mention TURSO_AUTH_TOKEN" check —
+          # that would fail on every run, since the codebase legitimately
+          # references these variable names throughout (source, README,
+          # .dev.vars.example). This looks for VARNAME=<real-looking-value>
+          # assignments and key-shaped strings, then excludes this repo's
+          # known placeholder text. Extend the exclusion list below if a new
+          # placeholder string is ever added.
+          if git log -p --all \
+            | grep -nEi "(TURSO_AUTH_TOKEN|RESEND_API_KEY|CONTACT_TOKEN_SECRET)=[^ \"]{12,}|sk_[A-Za-z0-9]{20,}|re_[A-Za-z0-9]{20,}|-----BEGIN[A-Z ]*PRIVATE KEY-----" \
+            | grep -viE "replace-with|replace_with|your-key-here|your_key_here|your-database-name|your-64-char"; then
+            echo "::error::Possible secret found in git history — see matches above"
+            exit 1
+          fi
+          echo "No secrets found."
