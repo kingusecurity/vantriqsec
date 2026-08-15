@@ -1,0 +1,88 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Button from '@/components/Button.astro';
+import Card from '@/components/Card.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import Shield from '@/components/icons/Shield.astro';
+import Lock from '@/components/icons/Lock.astro';
+import Server from '@/components/icons/Server.astro';
+import Globe from '@/components/icons/Globe.astro';
+
+const highlights = [
+  {
+    icon: Lock,
+    title: 'Vulnerability Assessments',
+    description: 'Structured testing that finds real weaknesses before attackers do.',
+  },
+  {
+    icon: Server,
+    title: 'Infrastructure Hardening',
+    description: 'Configuration reviews and hardening for servers, networks, and cloud environments.',
+  },
+  {
+    icon: Globe,
+    title: 'Web Application Security',
+    description: 'Assessments focused on the applications your customers actually use.',
+  },
+  {
+    icon: Shield,
+    title: 'Incident Response',
+    description: 'A clear plan and a steady hand when something goes wrong.',
+  },
+];
+---
+
+<BaseLayout
+  title="Home"
+  description="Sipar Security is a Pakistan-based cybersecurity firm helping businesses assess, harden, and defend their systems."
+>
+  <section class="border-b border-surface-800 bg-surface-950">
+    <div class="mx-auto max-w-6xl px-6 py-24 text-center sm:py-32">
+      <p class="text-sm font-semibold uppercase tracking-wide text-brand-500">Sipar Security</p>
+      <h1 class="mt-4 text-4xl font-bold sm:text-6xl">
+        Cybersecurity built for how your business actually runs
+      </h1>
+      <p class="mx-auto mt-6 max-w-2xl text-lg text-text-secondary">
+        We assess, harden, and defend the systems Pakistani businesses depend on every
+        day — with clear findings and remediation plans, not jargon.
+      </p>
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <Button href="/contact" variant="primary">Get in touch</Button>
+        <Button href="/services" variant="secondary">See our services</Button>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 py-24">
+    <SectionHeading
+      eyebrow="What we do"
+      title="Security work that maps to real risk"
+      description="Four core areas cover most of what growing organizations need to reduce their exposure."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        highlights.map(({ icon: Icon, title, description }) => (
+          <Card>
+            <Icon class="h-8 w-8 text-brand-500" />
+            <h3 class="mt-4 text-lg font-semibold text-text-primary">{title}</h3>
+            <p class="mt-2 text-sm text-text-secondary">{description}</p>
+          </Card>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="border-t border-surface-800 bg-surface-900">
+    <div class="mx-auto max-w-4xl px-6 py-20 text-center">
+      <h2 class="text-3xl font-bold sm:text-4xl">Not sure where to start?</h2>
+      <p class="mx-auto mt-4 max-w-xl text-lg text-text-secondary">
+        Tell us about your environment and we'll recommend where to focus first.
+      </p>
+      <div class="mt-8">
+        <Button href="/contact" variant="primary">Talk to us</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

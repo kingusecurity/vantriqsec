@@ -1,0 +1,80 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import Button from '@/components/Button.astro';
+import Card from '@/components/Card.astro';
+import Shield from '@/components/icons/Shield.astro';
+import CheckCircle from '@/components/icons/CheckCircle.astro';
+import AlertTriangle from '@/components/icons/AlertTriangle.astro';
+
+const principles = [
+  {
+    icon: CheckCircle,
+    title: 'Findings you can act on',
+    description:
+      'Every report is prioritized by real-world impact, not just automated scanner output.',
+  },
+  {
+    icon: Shield,
+    title: 'No scare tactics',
+    description:
+      'We explain risk in plain terms and let the findings speak for themselves.',
+  },
+  {
+    icon: AlertTriangle,
+    title: 'Honest about limits',
+    description:
+      "If something is outside our scope or expertise, we'll tell you — and point you in the right direction.",
+  },
+];
+---
+
+<BaseLayout
+  title="About"
+  description="Sipar Security helps Pakistani businesses assess and reduce real security risk, with clear communication and no scare tactics."
+>
+  <section class="border-b border-surface-800 bg-surface-950">
+    <div class="mx-auto max-w-3xl px-6 py-20 text-center">
+      <SectionHeading
+        eyebrow="About us"
+        title="Security work built on clarity, not fear"
+        align="center"
+      />
+      <p class="mt-6 text-lg text-text-secondary">
+        Sipar Security exists because too many businesses either get ignored by
+        security vendors focused on large enterprises, or get sold fear instead of a
+        plan. We work directly with growing organizations to find real risk, explain
+        it clearly, and help fix it.
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 py-20">
+    <SectionHeading title="How we work" />
+    <div class="mt-10 grid gap-6 sm:grid-cols-3">
+      {
+        principles.map(({ icon: Icon, title, description }) => (
+          <Card>
+            <Icon class="h-8 w-8 text-brand-500" />
+            <h3 class="mt-4 text-lg font-semibold text-text-primary">{title}</h3>
+            <p class="mt-2 text-sm text-text-secondary">{description}</p>
+          </Card>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="border-t border-surface-800 bg-surface-900">
+    <div class="mx-auto max-w-4xl px-6 py-20 text-center">
+      <h2 class="text-3xl font-bold sm:text-4xl">Want to work with us?</h2>
+      <p class="mx-auto mt-4 max-w-xl text-lg text-text-secondary">
+        Tell us about your business and what you're trying to protect.
+      </p>
+      <div class="mt-8">
+        <Button href="/contact" variant="primary">Get in touch</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

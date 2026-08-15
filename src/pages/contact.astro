@@ -1,0 +1,93 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import Mail from '@/components/icons/Mail.astro';
+import Phone from '@/components/icons/Phone.astro';
+import MapPin from '@/components/icons/MapPin.astro';
+---
+
+<BaseLayout
+  title="Contact"
+  description="Get in touch with Sipar Security to discuss vulnerability assessments, infrastructure hardening, or incident response."
+>
+  <section class="mx-auto max-w-6xl px-6 py-20">
+    <SectionHeading eyebrow="Contact" title="Tell us about your environment" />
+
+    <div class="mt-12 grid gap-12 lg:grid-cols-3">
+      <div class="space-y-6 text-sm text-text-secondary">
+        <div class="flex items-center gap-3">
+          <Mail class="h-5 w-5 text-brand-500" />
+          <a href="mailto:hello@siparsecurity.com" class="hover:text-text-primary"
+            >hello@siparsecurity.com</a
+          >
+        </div>
+        <div class="flex items-center gap-3">
+          <Phone class="h-5 w-5 text-brand-500" />
+          <span>+92 300 0000000</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <MapPin class="h-5 w-5 text-brand-500" />
+          <span>Lahore, Pakistan</span>
+        </div>
+      </div>
+
+      <form id="contact-form" class="lg:col-span-2 space-y-6" novalidate>
+        <div>
+          <label for="name" class="block text-sm font-medium text-text-primary">Name</label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            required
+            minlength="2"
+            autocomplete="name"
+            class="mt-2 w-full rounded-md border border-surface-700 bg-surface-900 px-4 py-3 text-text-primary placeholder:text-text-muted focus:border-brand-500"
+          />
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-text-primary">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autocomplete="email"
+            class="mt-2 w-full rounded-md border border-surface-700 bg-surface-900 px-4 py-3 text-text-primary placeholder:text-text-muted focus:border-brand-500"
+          />
+        </div>
+
+        <div>
+          <label for="message" class="block text-sm font-medium text-text-primary">Message</label>
+          <textarea
+            id="message"
+            name="message"
+            rows="5"
+            required
+            minlength="10"
+            class="mt-2 w-full rounded-md border border-surface-700 bg-surface-900 px-4 py-3 text-text-primary placeholder:text-text-muted focus:border-brand-500"
+          ></textarea>
+        </div>
+
+        <!-- Honeypot: hidden from real visitors, left blank by them; bots often fill every field -->
+        <div class="hidden" aria-hidden="true">
+          <label for="company_website">Company website</label>
+          <input id="company_website" name="company_website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div id="form-status" role="status" aria-live="polite" class="hidden text-sm"></div>
+
+        <button
+          type="submit"
+          class="inline-flex items-center justify-center rounded-md bg-brand-600 px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-brand-700 hover:shadow-brand disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          Send message
+        </button>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline src="/scripts/contact-form.js" defer></script>

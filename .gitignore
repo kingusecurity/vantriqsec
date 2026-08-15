@@ -1,0 +1,32 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.vercel/
+.astro/
+
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# databases (Turso is remote, but never commit a stray local db file)
+*.db
+*.db-shm
+*.db-wal
+
+# uploads
+uploads/
+
+# leaked-credential patterns from the old codebase — never again
+*Credentials*
+*Emails*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+
+npm-debug.log*

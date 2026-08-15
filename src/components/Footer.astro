@@ -1,0 +1,58 @@
+---
+import Shield from '@/components/icons/Shield.astro';
+import Mail from '@/components/icons/Mail.astro';
+import Phone from '@/components/icons/Phone.astro';
+import MapPin from '@/components/icons/MapPin.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-surface-800 bg-surface-900">
+  <div class="mx-auto max-w-6xl px-6 py-12">
+    <div class="grid gap-10 md:grid-cols-3">
+      <div>
+        <div class="flex items-center gap-2 font-display text-lg font-semibold text-text-primary">
+          <Shield class="h-6 w-6 text-brand-500" />
+          Sipar Security
+        </div>
+        <p class="mt-3 max-w-xs text-sm text-text-muted">
+          Practical cybersecurity for growing businesses in Pakistan and beyond.
+        </p>
+      </div>
+
+      <nav aria-label="Footer">
+        <h2 class="text-sm font-semibold text-text-primary">Site</h2>
+        <ul class="mt-3 space-y-2 text-sm text-text-secondary">
+          <li><a href="/" class="hover:text-text-primary">Home</a></li>
+          <li><a href="/services" class="hover:text-text-primary">Services</a></li>
+          <li><a href="/about" class="hover:text-text-primary">About</a></li>
+          <li><a href="/contact" class="hover:text-text-primary">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div>
+        <h2 class="text-sm font-semibold text-text-primary">Contact</h2>
+        <ul class="mt-3 space-y-2 text-sm text-text-secondary">
+          <li class="flex items-center gap-2">
+            <Mail class="h-4 w-4 text-text-muted" />
+            <a href="mailto:hello@siparsecurity.com" class="hover:text-text-primary">
+              hello@siparsecurity.com
+            </a>
+          </li>
+          <li class="flex items-center gap-2">
+            <Phone class="h-4 w-4 text-text-muted" />
+            <span>+92 300 0000000</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <MapPin class="h-4 w-4 text-text-muted" />
+            <span>Lahore, Pakistan</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="mt-10 border-t border-surface-800 pt-6 text-xs text-text-muted">
+      &copy; {year} Sipar Security. All rights reserved.
+    </p>
+  </div>
+</footer>

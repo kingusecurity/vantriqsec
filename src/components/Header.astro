@@ -1,0 +1,85 @@
+---
+import Shield from '@/components/icons/Shield.astro';
+import Menu from '@/components/icons/Menu.astro';
+import X from '@/components/icons/X.astro';
+
+const navItems = [
+  { href: '/', label: 'Home' },
+  { href: '/services', label: 'Services' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-40 border-b border-surface-800 bg-surface-950/95 backdrop-blur">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    <a href="/" class="flex items-center gap-2 font-display text-lg font-semibold text-text-primary">
+      <Shield class="h-6 w-6 text-brand-500" />
+      Sipar Security
+    </a>
+
+    <nav aria-label="Primary" class="hidden md:block">
+      <ul class="flex items-center gap-8 text-sm font-medium">
+        {
+          navItems.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={currentPath === item.href ? 'page' : undefined}
+                class:list={[
+                  'transition-colors hover:text-text-primary',
+                  currentPath === item.href ? 'text-brand-500' : 'text-text-secondary',
+                ]}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <a
+      href="/contact"
+      class="hidden md:inline-flex items-center rounded-md bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-700"
+    >
+      Get in touch
+    </a>
+
+    <button
+      id="mobile-menu-button"
+      type="button"
+      class="md:hidden text-text-secondary"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span class="sr-only">Toggle navigation menu</span>
+      <Menu class="h-6 w-6" id="menu-icon" />
+      <X class="hidden h-6 w-6" id="close-icon" />
+    </button>
+  </div>
+
+  <nav id="mobile-menu" aria-label="Primary mobile" class="hidden md:hidden border-t border-surface-800 px-6 py-4">
+    <ul class="flex flex-col gap-4 text-sm font-medium">
+      {
+        navItems.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              aria-current={currentPath === item.href ? 'page' : undefined}
+              class:list={[
+                currentPath === item.href ? 'text-brand-500' : 'text-text-secondary',
+              ]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<script is:inline src="/scripts/mobile-menu.js" defer></script>

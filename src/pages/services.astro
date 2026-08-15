@@ -1,0 +1,114 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import Button from '@/components/Button.astro';
+import Lock from '@/components/icons/Lock.astro';
+import Server from '@/components/icons/Server.astro';
+import Globe from '@/components/icons/Globe.astro';
+import Shield from '@/components/icons/Shield.astro';
+import CheckCircle from '@/components/icons/CheckCircle.astro';
+
+const services = [
+  {
+    icon: Lock,
+    title: 'Vulnerability Assessments',
+    description:
+      'A structured look at your systems from an attacker\'s perspective — networks, endpoints, and applications.',
+    includes: [
+      'Automated and manual testing',
+      'Findings ranked by real-world impact',
+      'A remediation plan your team can actually act on',
+    ],
+  },
+  {
+    icon: Server,
+    title: 'Infrastructure Hardening',
+    description:
+      'Configuration review and hardening for servers, networks, and cloud environments so common misconfigurations stop being an easy win for attackers.',
+    includes: [
+      'Server and network configuration review',
+      'Cloud environment hardening',
+      'Baseline security policies',
+    ],
+  },
+  {
+    icon: Globe,
+    title: 'Web Application Security',
+    description:
+      'Assessments focused on the applications your customers and staff use every day — login flows, forms, APIs, and admin panels.',
+    includes: [
+      'OWASP-aligned application testing',
+      'Authentication and session review',
+      'API security assessment',
+    ],
+  },
+  {
+    icon: Shield,
+    title: 'Incident Response',
+    description:
+      'When something goes wrong, you need a clear plan and a steady hand — not a scramble.',
+    includes: [
+      'Incident triage and containment support',
+      'Root-cause investigation',
+      'Post-incident hardening recommendations',
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Services"
+  description="Vulnerability assessments, infrastructure hardening, web application security, and incident response from Sipar Security."
+>
+  <section class="border-b border-surface-800 bg-surface-950">
+    <div class="mx-auto max-w-4xl px-6 py-20 text-center">
+      <SectionHeading
+        eyebrow="Services"
+        title="Security work that fits how you actually operate"
+        description="Every engagement ends with findings you can prioritize and act on — not a report that sits unread."
+        align="center"
+      />
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-5xl px-6 py-20">
+    <div class="space-y-16">
+      {
+        services.map(({ icon: Icon, title, description, includes }) => (
+          <div class="grid gap-8 sm:grid-cols-3">
+            <div>
+              <Icon class="h-8 w-8 text-brand-500" />
+              <h2 class="mt-4 text-2xl font-bold text-text-primary">{title}</h2>
+            </div>
+            <div class="sm:col-span-2">
+              <p class="text-text-secondary">{description}</p>
+              <ul class="mt-4 space-y-2">
+                {includes.map((item) => (
+                  <li class="flex items-start gap-2 text-sm text-text-secondary">
+                    <CheckCircle class="mt-0.5 h-4 w-4 shrink-0 text-feedback-success" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="border-t border-surface-800 bg-surface-900">
+    <div class="mx-auto max-w-4xl px-6 py-20 text-center">
+      <h2 class="text-3xl font-bold sm:text-4xl">Ready to scope an engagement?</h2>
+      <p class="mx-auto mt-4 max-w-xl text-lg text-text-secondary">
+        Tell us what you're running and what's changed recently — that's usually enough
+        to recommend a starting point.
+      </p>
+      <div class="mt-8">
+        <Button href="/contact" variant="primary">Contact us</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
