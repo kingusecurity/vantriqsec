@@ -1,0 +1,92 @@
+VANTRIQ — PRE-LAUNCH PASS REPORT
+Prepared: 2026-08-15
+Commit: 8957e4b "Pre-launch pass: deploy checklist, contact smoke test, Organization JSON-LD"
+
+
+PLACEHOLDER CHECKLIST (act on this)
+------------------------------------
+Value                          File(s) : Line(s)
+------------------------------------------------------------------------
+hello@vantriq.com              src/components/Footer.astro:38,39
+                                src/pages/contact.astro:22,23
+
+notifications@vantriq.com      src/lib/email.ts:17
+
+security@vantriq.com           SECURITY.md:6
+
++92 300 0000000                src/components/Footer.astro:44
+                                src/pages/contact.astro:28
+
+"Lahore, Pakistan"             src/components/Footer.astro:48
+                                src/pages/contact.astro:32
+
+TODO comments                  astro.config.mjs:6
+                                  (placeholder site domain vantriq.com)
+                                src/layouts/BaseLayout.astro:16
+                                  (no OG/Twitter image yet)
+                                src/components/OrganizationSchema.astro
+                                  (sameAs social handles — new this pass:
+                                  https://x.com/TODO_vantriq_set_real_handle
+                                  https://www.linkedin.com/company/TODO_vantriq_set_real_handle)
+
+lorem ipsum, FIXME, XXX,       none found
+"your company", "example.com"
+
+.env.example's                 intentional — it's the example env file,
+hello@vantriq.example          not filler needing a real value
+
+Not on the original list but same category, flagged for completeness:
+the vantriq.com domain itself is baked into astro.config.mjs,
+robots.txt, and the sitemap/canonical URLs — confirm ownership/control
+of this domain before launch, since it's now load-bearing in several
+places.
+
+
+REST OF THE PASS
+-----------------
+
+2. README
+   Setup/Deploying sections replaced with an ordered, numbered
+   checklist:
+   - Turso: CLI install -> create db -> get URL/token -> apply schema
+     -> optional dev db
+   - Resend: dashboard key creation -> curl calls to add/verify the
+     domain with real DNS record output -> dig checks
+   - Vercel: `vercel env add` commands per variable per environment
+   Real commands throughout, not descriptions.
+
+3. scripts/test-contact.mjs
+   POSTs a test submission, reports validation/DB-insert status from
+   the HTTP response, then independently queries Turso directly for
+   the inserted row rather than trusting the response. Email is
+   reported as inferred (the API deliberately never confirms send
+   status to the caller — by design, so a Resend outage can't fail the
+   visitor's request), with an optional best-effort cross-check against
+   Resend's own API if RESEND_API_KEY is available.
+
+   Run with:
+     node --env-file=.env scripts/test-contact.mjs [--url https://vantriq.com]
+
+   Syntax-checked and verified it fails gracefully against an
+   unreachable host.
+
+4. Structured data
+   Added Organization JSON-LD (name, url, logo, contactPoint, sameAs)
+   via a new OrganizationSchema.astro component, rendered site-wide,
+   verified in the built HTML as valid JSON.
+
+   Did NOT add LocalBusiness schema — that requires a decision on
+   whether the business address should be made public. Awaiting input
+   before assuming either way.
+
+5. Final gate
+   - astro check: 0 errors (fixed one is:inline hint along the way,
+     same non-issue pattern as prior passes)
+   - npm run build: clean
+   - .gitignore re-verified against real .env/.db/uploads/ test files
+     — all correctly ignored
+   - Secret scan (git ls-files | xargs grep -lIE
+     "(TURSO_AUTH_TOKEN|RESEND_API_KEY|sk_|re_)[A-Za-z0-9_-]{8,}"):
+     2 matches, both confirmed as placeholder text
+     (re_replace_with_real_key, re_your_key_here) in
+     .env.example/README.md — not real credentials.

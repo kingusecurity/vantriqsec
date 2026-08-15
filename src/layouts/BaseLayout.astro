@@ -13,11 +13,7 @@ const { title, description } = Astro.props;
 
 const fullTitle = `${title} · Vantriq`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-
-// TODO: no branded Open Graph/Twitter image exists yet — design a real
-// 1200x630 asset (no stock/AI imagery, per project constraints) and set
-// it here. Omitting og:image/twitter:image entirely until then rather
-// than pointing at a placeholder that would 404 or look wrong.
+const ogImageURL = new URL('/og.png', Astro.site);
 ---
 
 <!doctype html>
@@ -35,10 +31,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:site_name" content="Vantriq" />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
 
     <OrganizationSchema />
   </head>

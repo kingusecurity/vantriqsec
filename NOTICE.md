@@ -13,16 +13,32 @@ Nothing is loaded from a CDN at runtime.
   [`@fontsource/space-grotesk`](https://www.npmjs.com/package/@fontsource/space-grotesk).
   https://github.com/floriankarsten/space-grotesk
 
+- **Build-tooling-only, not served to visitors:** `scripts/assets/fonts/`
+  contains static TTF instances of the same two typefaces (Space Grotesk
+  Bold, Inter Medium), used solely by `scripts/generate-og-image.mjs` to
+  rasterize `public/og.png`. The SVG renderer used for that step doesn't
+  resolve variable-font weight axes or decode WOFF2, so these are
+  separate static builds of the identical OFL-licensed fonts — Space
+  Grotesk Bold from the original designer's repo
+  (https://github.com/floriankarsten/space-grotesk/tree/master/fonts/ttf/static),
+  Inter Medium from Google's static font build (fonts.gstatic.com).
+
 ## Icons
 
 - **Lucide** — ISC License. Individual icon SVGs (Shield, Lock, Server,
-  Globe, Mail, Phone, MapPin, CheckCircle, AlertTriangle, Menu, X) are
-  adapted as local `.astro` components under `src/components/icons/`.
+  Globe, Mail, MapPin, CheckCircle, AlertTriangle, Menu, X) are adapted
+  as local `.astro` components under `src/components/icons/`.
   https://lucide.dev · https://github.com/lucide-icons/lucide
 
 ## Images
 
 No stock photography or AI-generated imagery is used in this project.
+
+- **`public/og.png`** — original asset, generated programmatically by
+  `scripts/generate-og-image.mjs` from an SVG built entirely from this
+  project's own design tokens (colors, the Shield icon above, and the
+  fonts above). No photography or third-party imagery involved.
+
 Any imagery added later must be either an original asset or one with a
 documented, commercial-use-permitting license — recorded in this file
 when added.
