@@ -10,7 +10,7 @@ interface Props {
 
 const { title, description } = Astro.props;
 
-const fullTitle = `${title} · Sipar Security`;
+const fullTitle = `${title} · Vantriq`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 // TODO: no branded Open Graph/Twitter image exists yet — design a real
@@ -33,7 +33,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
-    <meta property="og:site_name" content="Sipar Security" />
+    <meta property="og:site_name" content="Vantriq" />
 
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={fullTitle} />

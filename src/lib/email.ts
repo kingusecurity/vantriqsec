@@ -14,7 +14,7 @@ export async function sendContactNotification(input: ContactInput): Promise<void
 
   try {
     const { error } = await resend.emails.send({
-      from: 'Sipar Security Website <notifications@siparsecurity.com>',
+      from: 'Vantriq Website <notifications@vantriq.com>',
       to: toEmail,
       replyTo: input.email,
       subject: `New contact form submission from ${input.name}`,

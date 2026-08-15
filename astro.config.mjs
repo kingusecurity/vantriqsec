@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // TODO: placeholder domain — replace with the real production domain
 // before launch (also update it in public/robots.txt's Sitemap line).
-const SITE_URL = 'https://siparsecurity.com';
+const SITE_URL = 'https://vantriq.com';
 
 export default defineConfig({
   site: SITE_URL,

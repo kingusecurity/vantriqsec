@@ -1,6 +1,6 @@
-# Sipar Security
+# Vantriq
 
-Marketing site for Sipar Security — Astro + Tailwind CSS v4, deployed
+Marketing site for Vantriq — Astro + Tailwind CSS v4, deployed
 to Vercel, contact form backed by Turso (libSQL) and Resend.
 
 ## Stack
@@ -25,18 +25,18 @@ to Vercel, contact form backed by Turso (libSQL) and Resend.
 2. **Create a Turso database**
 
    ```bash
-   turso db create sipar-security
-   turso db show sipar-security --url
-   turso db tokens create sipar-security
+   turso db create vantriq
+   turso db show vantriq --url
+   turso db tokens create vantriq
    ```
 
    Apply the schema:
 
    ```bash
-   turso db shell sipar-security < src/db/schema.sql
+   turso db shell vantriq < src/db/schema.sql
    ```
 
-   Consider a second database (e.g. `sipar-security-dev`) for local
+   Consider a second database (e.g. `vantriq-dev`) for local
    development so testing doesn't write into production data.
 
 3. **Set up Resend**
