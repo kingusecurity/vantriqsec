@@ -9,6 +9,14 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+
+const fullTitle = `${title} · Sipar Security`;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+// TODO: no branded Open Graph/Twitter image exists yet — design a real
+// 1200x630 asset (no stock/AI imagery, per project constraints) and set
+// it here. Omitting og:image/twitter:image entirely until then rather
+// than pointing at a placeholder that would 404 or look wrong.
 ---
 
 <!doctype html>
@@ -17,8 +25,19 @@ const { title, description } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title} · Sipar Security</title>
+    <link rel="canonical" href={canonicalURL} />
+    <title>{fullTitle}</title>
     <meta name="description" content={description} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content="Sipar Security" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
   </head>
   <body class="min-h-screen flex flex-col">
     <a

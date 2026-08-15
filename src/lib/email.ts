@@ -13,14 +13,32 @@ export async function sendContactNotification(input: ContactInput): Promise<void
   const toEmail = import.meta.env.CONTACT_TO_EMAIL;
 
   try {
-    await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: 'Sipar Security Website <notifications@siparsecurity.com>',
       to: toEmail,
       replyTo: input.email,
       subject: `New contact form submission from ${input.name}`,
       text: `Name: ${input.name}\nEmail: ${input.email}\n\nMessage:\n${input.message}`,
     });
+
+    if (error) {
+      // Resend returns API errors in the response body rather than throwing.
+      console.error('Resend rejected the contact notification email:', {
+        timestamp: new Date().toISOString(),
+        to: toEmail,
+        submitterEmail: input.email,
+        error,
+      });
+    }
   } catch (error) {
-    console.error('Failed to send contact notification email:', error);
+    // Network/transport failure. The submission is already durably stored
+    // in Turso before this runs (see api/contact.ts), so this is logged
+    // and swallowed rather than surfaced to the visitor.
+    console.error('Failed to send contact notification email:', {
+      timestamp: new Date().toISOString(),
+      to: toEmail,
+      submitterEmail: input.email,
+      error,
+    });
   }
 }

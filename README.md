@@ -72,6 +72,31 @@ to Vercel, contact form backed by Turso (libSQL) and Resend.
    `vercel.json`'s static header rules don't reach on some routing
    configurations — kept as belt-and-suspenders).
 
+## Content Security Policy
+
+The current policy is `script-src 'self'` — no inline scripts, no third-
+party script origins, nothing else allowlisted. Both client-side scripts
+(`public/scripts/mobile-menu.js`, `public/scripts/contact-form.js`) are
+served as genuine external files specifically so this policy can stay
+strict (see "Notes" below for why that matters).
+
+**This means adding any of the following will break under the current
+policy and requires an explicit CSP change first:**
+
+- Analytics (Plausible, GA, Fathom, etc.) — needs its script origin added
+  to `script-src`, and usually `connect-src` for its reporting endpoint.
+- A chat widget (Intercom, Crisp, etc.) — typically needs `script-src`,
+  `connect-src`, `frame-src`, and sometimes `img-src`/`font-src` additions.
+- Any third-party embed (video, forms, maps) — same pattern: check what
+  origins it actually loads from and add only those, not a wildcard.
+
+**Where the header is defined (update both, they must stay in sync):**
+
+- `vercel.json` — static header rule applied by Vercel's edge config.
+- `src/middleware.ts` — applied per-request in the Astro/Node runtime,
+  which also covers `/api/contact` (routes `vercel.json`'s static rules
+  don't reliably reach in every routing configuration).
+
 ## Notes
 
 - `style-src 'unsafe-inline'` is present in the CSP because Astro

@@ -30,7 +30,20 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
   const ip = clientAddress || 'unknown';
 
-  const limited = await isRateLimited(ip);
+  let limited: boolean;
+  try {
+    limited = await isRateLimited(ip);
+  } catch (error) {
+    // Fail closed: if we can't verify the rate limit, don't let the
+    // submission through. Turso being unreachable should not become an
+    // unlimited-submissions bypass.
+    console.error('Rate limit check failed, rejecting submission:', error);
+    return jsonResponse(
+      { error: 'Something went wrong. Please try again shortly.' },
+      503
+    );
+  }
+
   if (limited) {
     return jsonResponse(
       { error: 'Too many submissions from this address. Please try again later.' },
