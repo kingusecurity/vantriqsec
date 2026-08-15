@@ -1,0 +1,97 @@
+VANTRIQ — REMOTE HOSTING + CI SETUP REPORT
+Prepared: 2026-08-15
+Repo: https://github.com/VANTRIQ/vantriq (private)
+
+
+RESULT SUMMARY
+---------------
+GitHub setup complete. VANTRIQ/vantriq is live, pushed, and CI is
+green.
+
+
+SECURITY FEATURES — ACTUAL RESULTS, NOT ASSUMPTIONS
+------------------------------------------------------
+
+Feature                          Result       Detail
+------------------------------------------------------------------------
+Dependabot alerts                ENABLED      PUT .../vulnerability-alerts
+                                               -> verified via follow-up
+                                               GET (204)
+
+Dependabot security updates      ENABLED      PUT .../automated-security-fixes
+                                               -> verified via GET ->
+                                               {"enabled":true,"paused":false}
+
+Branch protection on main        REJECTED     403: "Upgrade to GitHub Pro
+                                               or make this repository
+                                               public to enable this
+                                               feature." This repo is
+                                               org-owned, so the relevant
+                                               upgrade is GitHub Team
+                                               (~$4/user/month, billed to
+                                               the vantriq org), not an
+                                               individual Pro plan — the
+                                               error text is generic and
+                                               doesn't distinguish the
+                                               two. Alternative: make the
+                                               repo public (no cost,
+                                               changes visibility
+                                               instead).
+
+Secret scanning + push           REJECTED     422: "Secret scanning is
+protection                                    not available for this
+                                               repository." Requires
+                                               GitHub Advanced Security,
+                                               historically an
+                                               Enterprise-tier add-on
+                                               priced per active
+                                               committer — pricing has
+                                               shifted over time, check
+                                               github.com/pricing for the
+                                               current number rather than
+                                               trust a figure here. Not
+                                               something a Team-tier
+                                               upgrade alone unlocks.
+
+2 of 4 requested features are actually on. The other 2 are blocked by
+plan tier, confirmed by the actual API responses, not guessed.
+
+
+CI
+---
+Two real problems surfaced and got fixed along the way, not glossed
+over:
+
+1. First run failed — astro check couldn't resolve `cloudflare:workers`
+   typing because worker-configuration.d.ts is (correctly) gitignored
+   and the workflow never regenerated it. Fixed by generating a
+   throwaway .dev.vars in the runner before `wrangler types`.
+
+2. Second run failed — that fix's own placeholder values
+   (ci-placeholder-token, etc.) tripped the secret-scan step, since
+   they hadn't been excluded. Fixed by generalizing the exclusion to a
+   "placeholder"/"fake-" substring match instead of an exact-string
+   list.
+
+Third run: conclusion: "success", all 8 steps green, on commit
+7fe96e8.
+
+
+CONFIRMED
+----------
+$ git remote -v
+origin  https://github.com/VANTRIQ/vantriq.git (fetch)
+origin  https://github.com/VANTRIQ/vantriq.git (push)
+
+$ git status -sb
+## main...origin/main
+
+Clean, fully in sync, nothing uncommitted.
+
+
+MINOR NON-BLOCKING NOTE
+-------------------------
+CI logged a deprecation warning that actions/checkout@v4 and
+actions/setup-node@v4 are running on a Node 20 target being forced
+onto Node 24 runners — not a failure, just worth bumping to newer
+action versions at some point.

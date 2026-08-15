@@ -1,0 +1,24 @@
+#!/bin/sh
+# Runs gitleaks against staged changes before allowing a commit, so a
+# secret never reaches the remote in the first place.
+#
+# One-time setup for a fresh clone:
+#   git config core.hooksPath .githooks
+#
+# Requires the gitleaks binary on PATH — install from
+# https://github.com/gitleaks/gitleaks/releases (no package manager
+# needed, it's a single static binary; put it anywhere on PATH).
+#
+# If gitleaks isn't installed locally, this warns and lets the commit
+# through rather than blocking it — CI (.github/workflows/ci.yml) is
+# the backstop either way, so a missing local install degrades safety
+# but doesn't brick commits for a contributor who hasn't set it up yet.
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "warning: gitleaks not found on PATH — skipping local secret scan." >&2
+  echo "  Install: https://github.com/gitleaks/gitleaks/releases" >&2
+  echo "  (CI will still catch any leaked secret on push.)" >&2
+  exit 0
+fi
+
+gitleaks git . --staged --redact -v

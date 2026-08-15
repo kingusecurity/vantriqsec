@@ -14,6 +14,25 @@ Cloudflare Workers, contact form backed by Turso (libSQL) and Resend.
 - `zod` for form validation
 - Self-hosted fonts (`@fontsource/inter`, `@fontsource/space-grotesk`)
 
+## One-time setup: local secret scan
+
+This repo scans full git history for secrets in CI
+(`.github/workflows/ci.yml`, using [gitleaks](https://github.com/gitleaks/gitleaks)
+and `.gitleaks.toml`). To catch a secret *before* it ever reaches the
+remote, install [gitleaks](https://github.com/gitleaks/gitleaks/releases)
+(a single static binary, no package manager required) and then, once
+per clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+That points git at `.githooks/pre-commit`, which runs gitleaks against
+staged changes before each commit. If gitleaks isn't installed locally
+it warns and lets the commit through rather than blocking it — CI is
+the backstop either way, so a missing local install degrades safety
+but doesn't brick commits for a contributor who hasn't set it up yet.
+
 ## Deploy Checklist
 
 Ordered, exact commands for a fresh deploy. Run from the project root
