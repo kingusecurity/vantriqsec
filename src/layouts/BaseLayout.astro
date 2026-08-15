@@ -1,6 +1,7 @@
 ---
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
+import OrganizationSchema from '@/components/OrganizationSchema.astro';
 import '@/styles/global.css';
 
 interface Props {
@@ -38,6 +39,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
+
+    <OrganizationSchema />
   </head>
   <body class="min-h-screen flex flex-col">
     <a

@@ -1,0 +1,38 @@
+---
+// JSON-LD Organization schema, site-wide. `application/ld+json` blocks
+// are data, not executable script, so they're unaffected by the
+// script-src 'self' CSP (see README's "Content Security Policy" section)
+// — no CSP change needed for this.
+
+const siteUrl = Astro.site ? Astro.site.toString().replace(/\/$/, '') : '';
+
+// No dedicated logo asset exists yet — reusing the favicon SVG as a
+// stand-in. Replace with a proper brand logo (schema.org/Google prefer
+// a raster image) once one is designed.
+const logoUrl = Astro.site ? new URL('/favicon.svg', Astro.site).toString() : '';
+
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Vantriq',
+  url: siteUrl,
+  logo: logoUrl,
+  contactPoint: [
+    {
+      '@type': 'ContactPoint',
+      email: 'hello@vantriq.com',
+      contactType: 'customer service',
+      areaServed: 'PK',
+      availableLanguage: ['English'],
+    },
+  ],
+  // TODO: placeholder social handles — replace with real profile URLs
+  // before launch; these intentionally don't resolve as-is.
+  sameAs: [
+    'https://x.com/TODO_vantriq_set_real_handle',
+    'https://www.linkedin.com/company/TODO_vantriq_set_real_handle',
+  ],
+};
+---
+
+<script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />

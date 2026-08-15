@@ -14,63 +14,162 @@ to Vercel, contact form backed by Turso (libSQL) and Resend.
 - `zod` for form validation
 - Self-hosted fonts (`@fontsource/inter`, `@fontsource/space-grotesk`)
 
-## Setup
+## Deploy Checklist
 
-1. **Install dependencies**
+Ordered, exact commands for a fresh deploy. Run from the project root
+unless noted.
 
-   ```bash
-   npm install
-   ```
+### 0. Install dependencies
 
-2. **Create a Turso database**
+```bash
+npm install
+```
 
-   ```bash
-   turso db create vantriq
-   turso db show vantriq --url
-   turso db tokens create vantriq
-   ```
+### 1. Turso (contact submissions + rate-limit store)
 
-   Apply the schema:
+Install the CLI if you don't have it, and log in:
 
-   ```bash
-   turso db shell vantriq < src/db/schema.sql
-   ```
+```bash
+curl -sSfL https://get.tur.so/install.sh | bash
+turso auth login
+```
 
-   Consider a second database (e.g. `vantriq-dev`) for local
-   development so testing doesn't write into production data.
+Create the production database and capture its URL + auth token:
 
-3. **Set up Resend**
+```bash
+turso db create vantriq
+turso db show vantriq --url
+turso db tokens create vantriq
+```
 
-   Sign up at resend.com, verify a sending domain (or use their
-   sandbox domain while testing), and create an API key.
+Save the URL from `turso db show` and the token from `turso db tokens
+create` — you'll paste them into `.env` (step 4) and Vercel (step 3).
 
-4. **Copy environment variables**
+Apply the schema:
 
-   ```bash
-   cp .env.example .env
-   ```
+```bash
+turso db shell vantriq < src/db/schema.sql
+```
 
-   Fill in `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `RESEND_API_KEY`,
-   and `CONTACT_TO_EMAIL`. `.env` is gitignored — never commit real
-   values.
+Optional but recommended — a separate dev database so local testing
+doesn't write into production data:
 
-5. **Run locally**
+```bash
+turso db create vantriq-dev
+turso db show vantriq-dev --url
+turso db tokens create vantriq-dev
+turso db shell vantriq-dev < src/db/schema.sql
+```
 
-   ```bash
-   npm run dev
-   ```
+### 2. Resend (contact notification email)
 
-## Deploying to Vercel
+The very first API key has to be created in the dashboard — there's no
+bootstrapping command for that (Resend's API itself requires a key to
+authenticate):
 
-1. Push this repo to a git remote and import it in Vercel, or run
-   `vercel` from this directory.
-2. In the Vercel project's Environment Variables settings, add
-   `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `RESEND_API_KEY`, and
-   `CONTACT_TO_EMAIL` (Production and Preview).
-3. Security headers are applied both via `vercel.json` and
-   `src/middleware.ts` (the latter also covers `/api/contact`, which
-   `vercel.json`'s static header rules don't reach on some routing
-   configurations — kept as belt-and-suspenders).
+1. Sign up / log in at https://resend.com.
+2. Dashboard → **API Keys** → **Create API Key** → copy it (used in
+   step 4/step 3, and in the `curl` calls below via `$RESEND_API_KEY`).
+
+Once you have a key, add and verify the sending domain via the API
+(this returns the exact DNS records to create):
+
+```bash
+export RESEND_API_KEY=re_your_key_here
+
+curl -X POST https://api.resend.com/domains \
+  -H "Authorization: Bearer $RESEND_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"vantriq.com"}'
+```
+
+The response includes a `records` array (SPF `TXT`, DKIM `CNAME`/`TXT`,
+and optionally `MX`) with the exact `name`/`type`/`value` to add at
+your DNS provider. Add each record there, then confirm propagation:
+
+```bash
+dig TXT vantriq.com +short
+dig CNAME resend._domainkey.vantriq.com +short
+```
+
+Once DNS has propagated (can take a few minutes to a few hours),
+trigger verification:
+
+```bash
+curl -X POST https://api.resend.com/domains/{domain_id}/verify \
+  -H "Authorization: Bearer $RESEND_API_KEY"
+```
+
+(`{domain_id}` is in the response from the first `POST /domains`
+call.) Confirm status:
+
+```bash
+curl https://api.resend.com/domains \
+  -H "Authorization: Bearer $RESEND_API_KEY"
+```
+
+Look for `"status": "verified"` before relying on `notifications@vantriq.com`
+to actually deliver — sends from an unverified domain will fail or land
+in spam.
+
+### 3. Vercel — environment variables
+
+Set each variable for both **Production** and **Preview** (the CLI
+prompts for the value on stdin, or pipe it):
+
+```bash
+vercel link
+
+echo "$TURSO_DATABASE_URL" | vercel env add TURSO_DATABASE_URL production
+echo "$TURSO_DATABASE_URL" | vercel env add TURSO_DATABASE_URL preview
+
+echo "$TURSO_AUTH_TOKEN" | vercel env add TURSO_AUTH_TOKEN production
+echo "$TURSO_AUTH_TOKEN" | vercel env add TURSO_AUTH_TOKEN preview
+
+echo "$RESEND_API_KEY" | vercel env add RESEND_API_KEY production
+echo "$RESEND_API_KEY" | vercel env add RESEND_API_KEY preview
+
+echo "hello@vantriq.com" | vercel env add CONTACT_TO_EMAIL production
+echo "hello@vantriq.com" | vercel env add CONTACT_TO_EMAIL preview
+```
+
+Use the **production** Turso database's credentials for the
+Production environment, and either the same or the `vantriq-dev`
+database's credentials for Preview — your call on whether preview
+deploys should write into real data.
+
+Verify what's set (values are masked):
+
+```bash
+vercel env ls
+```
+
+### 4. Local environment
+
+```bash
+cp .env.example .env
+```
+
+Fill in `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `RESEND_API_KEY`, and
+`CONTACT_TO_EMAIL` (use the `vantriq-dev` database's credentials here
+if you created one). `.env` is gitignored — never commit real values.
+
+### 5. Run locally
+
+```bash
+npm run dev
+```
+
+### 6. Deploy
+
+```bash
+vercel --prod
+```
+
+Security headers are applied both via `vercel.json` and
+`src/middleware.ts` (the latter also covers `/api/contact`, which
+`vercel.json`'s static header rules don't reach on some routing
+configurations — kept as belt-and-suspenders).
 
 ## Content Security Policy
 
