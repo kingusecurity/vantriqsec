@@ -48,12 +48,17 @@ jobs:
           # that would fail on every run, since the codebase legitimately
           # references these variable names throughout (source, README,
           # .dev.vars.example). This looks for VARNAME=<real-looking-value>
-          # assignments and key-shaped strings, then excludes this repo's
-          # known placeholder text. Extend the exclusion list below if a new
-          # placeholder string is ever added.
+          # assignments and key-shaped strings, then excludes obvious
+          # placeholder text. The generic `placeholder`/`fake` exclusion
+          # (rather than an ever-growing exact-string denylist) is a
+          # deliberate choice: it caught a real false positive from this
+          # workflow's own ci-placeholder-* dummy values in .dev.vars
+          # generation above on the first real run of this check. Keep
+          # using "placeholder"/"fake" in any future dummy values so this
+          # exclusion keeps covering them.
           if git log -p --all \
             | grep -nEi "(TURSO_AUTH_TOKEN|RESEND_API_KEY|CONTACT_TOKEN_SECRET)=[^ \"]{12,}|sk_[A-Za-z0-9]{20,}|re_[A-Za-z0-9]{20,}|-----BEGIN[A-Z ]*PRIVATE KEY-----" \
-            | grep -viE "replace-with|replace_with|your-key-here|your_key_here|your-database-name|your-64-char"; then
+            | grep -viE "replace-with|replace_with|your-key-here|your_key_here|your-database-name|your-64-char|placeholder|fake-"; then
             echo "::error::Possible secret found in git history — see matches above"
             exit 1
           fi
