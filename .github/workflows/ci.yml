@@ -19,6 +19,26 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      - name: Generate Cloudflare Workers types
+        run: |
+          # worker-configuration.d.ts is gitignored (it's derived partly
+          # from .dev.vars, which is per-developer and never committed —
+          # see README's "Deploy Checklist" step 4). astro check needs it
+          # to resolve `cloudflare:workers`'s env typing, so generate it
+          # here from throwaway placeholder values — these never touch
+          # git (this .dev.vars is created fresh in the runner's ephemeral
+          # filesystem and isn't added to any commit), and only the shape
+          # (all string-typed) matters, not the values.
+          cat > .dev.vars <<'VARS'
+          TURSO_DATABASE_URL=libsql://ci-placeholder.turso.io
+          TURSO_AUTH_TOKEN=ci-placeholder-token
+          RESEND_API_KEY=re_ci_placeholder
+          CONTACT_TO_EMAIL=ci-placeholder@example.com
+          CONTACT_TOKEN_SECRET=ci-placeholder-secret-not-real
+          VARS
+          npx wrangler types
+
       - run: npx astro check
       - run: npm run build
 
