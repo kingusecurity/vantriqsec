@@ -26,15 +26,11 @@ const organizationSchema = {
       availableLanguage: ['English'],
     },
   ],
-  // TODO: X/LinkedIn placeholders — replace with real profile URLs
-  // before launch; these intentionally don't resolve as-is. GitHub is
-  // real: https://github.com/VANTRIQ (repo name unchanged by the brand
-  // rename, per explicit instruction).
-  sameAs: [
-    'https://github.com/VANTRIQ',
-    'https://x.com/TODO_vantriqsec_set_real_handle',
-    'https://www.linkedin.com/company/TODO_vantriqsec_set_real_handle',
-  ],
+  // No `sameAs` here, deliberately: the repository is private (no
+  // resolvable GitHub URL for the Organization — see the founder
+  // Person entry below for the one GitHub link that's real) and there
+  // are no public company profiles yet. Add this key back once one
+  // exists — LinkedIn is the likely first.
   // Deliberately minimal: name + jobTitle + a link to the portfolio only.
   // No address/email/phone/birthDate — those fields exist on schema.org's
   // Person type but nothing about this site needs them, and adding them
