@@ -39,7 +39,8 @@ Nothing is loaded from a CDN at runtime.
 
 ## Images
 
-No stock photography or AI-generated imagery is used in this project.
+No stock photography or AI-generated imagery is present in the site
+as built and shipped.
 
 - **`public/og.png`** — original asset, generated programmatically by
   `scripts/generate-og-image.mjs` from an SVG built entirely from this
