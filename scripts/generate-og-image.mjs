@@ -67,7 +67,7 @@ const svg = `
     font-size="128"
     letter-spacing="2"
     fill="${COLOR_TEXT_PRIMARY}"
-  >VANTRIQ</text>
+  >VANTRIQSEC</text>
 
   <text
     x="100"

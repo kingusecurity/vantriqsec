@@ -1,6 +1,6 @@
-# Vantriq
+# VantriqSec
 
-Marketing site for Vantriq — Astro + Tailwind CSS v4, deployed to
+Marketing site for VantriqSec — Astro + Tailwind CSS v4, deployed to
 Cloudflare Workers, contact form backed by Turso (libSQL) and Resend.
 
 ## Stack
@@ -56,9 +56,9 @@ turso auth login
 Create the production database and capture its URL + auth token:
 
 ```bash
-turso db create vantriq
-turso db show vantriq --url
-turso db tokens create vantriq
+turso db create vantriqsec
+turso db show vantriqsec --url
+turso db tokens create vantriqsec
 ```
 
 Save the URL from `turso db show` and the token from `turso db tokens
@@ -68,17 +68,17 @@ secrets (step 3).
 Apply the schema:
 
 ```bash
-turso db shell vantriq < src/db/schema.sql
+turso db shell vantriqsec < src/db/schema.sql
 ```
 
 Optional but recommended — a separate dev database so local testing
 doesn't write into production data:
 
 ```bash
-turso db create vantriq-dev
-turso db show vantriq-dev --url
-turso db tokens create vantriq-dev
-turso db shell vantriq-dev < src/db/schema.sql
+turso db create vantriqsec-dev
+turso db show vantriqsec-dev --url
+turso db tokens create vantriqsec-dev
+turso db shell vantriqsec-dev < src/db/schema.sql
 ```
 
 ### 2. Resend (contact notification email)
@@ -100,7 +100,7 @@ export RESEND_API_KEY=re_your_key_here
 curl -X POST https://api.resend.com/domains \
   -H "Authorization: Bearer $RESEND_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"name":"vantriq.com"}'
+  -d '{"name":"vantriqsec.com"}'
 ```
 
 The response includes a `records` array (SPF `TXT`, DKIM `CNAME`/`TXT`,
@@ -108,8 +108,8 @@ and optionally `MX`) with the exact `name`/`type`/`value` to add at
 your DNS provider. Add each record there, then confirm propagation:
 
 ```bash
-dig TXT vantriq.com +short
-dig CNAME resend._domainkey.vantriq.com +short
+dig TXT vantriqsec.com +short
+dig CNAME resend._domainkey.vantriqsec.com +short
 ```
 
 Once DNS has propagated (can take a few minutes to a few hours),
@@ -128,7 +128,7 @@ curl https://api.resend.com/domains \
   -H "Authorization: Bearer $RESEND_API_KEY"
 ```
 
-Look for `"status": "verified"` before relying on `notifications@vantriq.com`
+Look for `"status": "verified"` before relying on `notifications@vantriqsec.com`
 to actually deliver — sends from an unverified domain will fail or land
 in spam.
 
@@ -143,13 +143,13 @@ way Vercel's Production/Preview split works — set each one with
 echo "$TURSO_DATABASE_URL" | npx wrangler secret put TURSO_DATABASE_URL
 echo "$TURSO_AUTH_TOKEN" | npx wrangler secret put TURSO_AUTH_TOKEN
 echo "$RESEND_API_KEY" | npx wrangler secret put RESEND_API_KEY
-echo "hello@vantriq.com" | npx wrangler secret put CONTACT_TO_EMAIL
+echo "hello@vantriqsec.com" | npx wrangler secret put CONTACT_TO_EMAIL
 
 CONTACT_TOKEN_SECRET=$(openssl rand -hex 32)
 echo "$CONTACT_TOKEN_SECRET" | npx wrangler secret put CONTACT_TOKEN_SECRET
 ```
 
-Alternative: the Cloudflare dashboard → Workers & Pages → the `vantriq`
+Alternative: the Cloudflare dashboard → Workers & Pages → the `vantriqsec`
 Worker → Settings → Variables and Secrets → Add.
 
 Verify what's set (values are never shown, only names):
@@ -165,7 +165,7 @@ cp .dev.vars.example .dev.vars
 ```
 
 Fill in `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `RESEND_API_KEY`,
-`CONTACT_TO_EMAIL`, and `CONTACT_TOKEN_SECRET` (use the `vantriq-dev`
+`CONTACT_TO_EMAIL`, and `CONTACT_TOKEN_SECRET` (use the `vantriqsec-dev`
 database's credentials here if you created one; for the token secret,
 `openssl rand -hex 32` or reuse the one you generated in step 3).
 `.dev.vars` is gitignored — never commit real values. This is

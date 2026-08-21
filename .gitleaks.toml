@@ -11,7 +11,7 @@
 # Rules instruct gitleaks on what should be considered a secret.
 # Allowlists instruct gitleaks on what is allowed, i.e. not a secret.
 
-title = "Vantriq gitleaks config"
+title = "VantriqSec gitleaks config"
 
 # minVersion indicates the minimum Gitleaks version required to use this config.
 # If the running version is older, a warning will be logged and not all
@@ -69,7 +69,7 @@ regexes = [
     '''replace-with-a-random-64-char-hex-string''',
     '''ci-placeholder-token''',
     '''ci-placeholder-secret-not-real''',
-    # --- Vantriq additions above: exact literal placeholder values only. ---
+    # --- VantriqSec additions above: exact literal placeholder values only. ---
 ]
 stopwords = [
     "014df517-39d1-4453-b7b3-9930c563627c",
@@ -77,7 +77,7 @@ stopwords = [
 ]
 
 
-# --- Vantriq custom rules (kept BEFORE the default ruleset below) ---
+# --- VantriqSec custom rules (kept BEFORE the default ruleset below) ---
 # Order matters: verified empirically that gitleaks evaluates rules in
 # file order, and once a text region is matched/claimed by an earlier
 # rule (here, the default ruleset's broad "generic-api-key" rule), later
@@ -94,12 +94,12 @@ regex = '''re_[A-Za-z0-9]{20,}'''
 keywords = ["re_"]
 
 [[rules]]
-id = "vantriq-contact-token-secret"
-description = "Vantriq CONTACT_TOKEN_SECRET-shaped value (64-char hex)"
+id = "vantriqsec-contact-token-secret"
+description = "VantriqSec CONTACT_TOKEN_SECRET-shaped value (64-char hex)"
 regex = '''CONTACT_TOKEN_SECRET\s*=\s*['"]?[a-f0-9]{48,}['"]?'''
 keywords = ["CONTACT_TOKEN_SECRET"]
 
-# --- End Vantriq custom rules ---
+# --- End VantriqSec custom rules ---
 
 [[rules]]
 id = "1password-secret-key"

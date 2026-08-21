@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://vantriq.com/sitemap-index.xml
+Sitemap: https://vantriqsec.com/sitemap-index.xml

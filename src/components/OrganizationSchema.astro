@@ -14,23 +14,26 @@ const logoUrl = Astro.site ? new URL('/favicon.svg', Astro.site).toString() : ''
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'Vantriq',
+  name: 'VantriqSec',
   url: siteUrl,
   logo: logoUrl,
   contactPoint: [
     {
       '@type': 'ContactPoint',
-      email: 'hello@vantriq.com',
+      email: 'hello@vantriqsec.com',
       contactType: 'customer service',
       areaServed: 'PK',
       availableLanguage: ['English'],
     },
   ],
-  // TODO: placeholder social handles — replace with real profile URLs
-  // before launch; these intentionally don't resolve as-is.
+  // TODO: X/LinkedIn placeholders — replace with real profile URLs
+  // before launch; these intentionally don't resolve as-is. GitHub is
+  // real: https://github.com/VANTRIQ (repo name unchanged by the brand
+  // rename, per explicit instruction).
   sameAs: [
-    'https://x.com/TODO_vantriq_set_real_handle',
-    'https://www.linkedin.com/company/TODO_vantriq_set_real_handle',
+    'https://github.com/VANTRIQ',
+    'https://x.com/TODO_vantriqsec_set_real_handle',
+    'https://www.linkedin.com/company/TODO_vantriqsec_set_real_handle',
   ],
 };
 ---

@@ -3,7 +3,7 @@
 ## Reporting a vulnerability
 
 If you believe you've found a security issue in this site, please email
-**security@vantriq.com** with details and reproduction steps.
+**security@vantriqsec.com** with details and reproduction steps.
 Please don't open a public issue for undisclosed vulnerabilities.
 
 (This is a placeholder inbox — see the placeholder audit in project

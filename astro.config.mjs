@@ -3,9 +3,7 @@ import cloudflare from '@astrojs/cloudflare';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
-// TODO: placeholder domain — replace with the real production domain
-// before launch (also update it in public/robots.txt's Sitemap line).
-const SITE_URL = 'https://vantriq.com';
+const SITE_URL = 'https://vantriqsec.com';
 
 export default defineConfig({
   site: SITE_URL,

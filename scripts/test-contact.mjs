@@ -11,15 +11,15 @@
 // against the Resend API if a key is available.
 //
 // Usage:
-//   node --env-file=.env scripts/test-contact.mjs
-//   node --env-file=.env scripts/test-contact.mjs --url https://vantriq.com
+//   node --env-file=.dev.vars scripts/test-contact.mjs
+//   node --env-file=.dev.vars scripts/test-contact.mjs --url https://vantriqsec.com
 //
 // TURSO_DATABASE_URL/TURSO_AUTH_TOKEN are required for the DB verification
 // step; RESEND_API_KEY is optional and only enables the best-effort email
 // check; CONTACT_TOKEN_SECRET is optional and only enables the "expired
 // token" negative case (forging a validly-signed old token requires the
 // same secret the server signs with). All picked up from the environment
-// (use --env-file to load .env, or export them yourself).
+// (use --env-file to load .dev.vars, or export them yourself).
 
 import { createClient } from '@libsql/client';
 import { createHmac, randomBytes } from 'node:crypto';
@@ -125,7 +125,7 @@ async function main() {
     const expiredToken = forgeToken(Date.now() - 40 * 60 * 1000); // 40 min ago, > 30 min max age
     await runNegativeCase(baseUrl, '  Expired token (40 min old)', { ...basePayload, contact_token: expiredToken }, 'expired');
   } else {
-    log('  Expired token', null, 'skipped — CONTACT_TOKEN_SECRET not in environment (run with `node --env-file=.env`)');
+    log('  Expired token', null, 'skipped — CONTACT_TOKEN_SECRET not in environment (run with `node --env-file=.dev.vars`)');
   }
 
   console.log('\nFull successful chain:');
@@ -179,7 +179,7 @@ async function main() {
     log(
       'DB row check',
       null,
-      'skipped — TURSO_DATABASE_URL/TURSO_AUTH_TOKEN not in environment (run with `node --env-file=.env`)'
+      'skipped — TURSO_DATABASE_URL/TURSO_AUTH_TOKEN not in environment (run with `node --env-file=.dev.vars`)'
     );
   } else {
     try {
