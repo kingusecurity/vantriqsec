@@ -7,6 +7,10 @@
 *.woff2 binary
 *.png binary
 *.ico binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.avif binary
 
 # Shell scripts always need LF, even on a Windows checkout — a CRLF
 # shebang line breaks execution.

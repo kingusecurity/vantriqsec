@@ -35,6 +35,16 @@ const organizationSchema = {
     'https://x.com/TODO_vantriqsec_set_real_handle',
     'https://www.linkedin.com/company/TODO_vantriqsec_set_real_handle',
   ],
+  // Deliberately minimal: name + jobTitle + a link to the portfolio only.
+  // No address/email/phone/birthDate — those fields exist on schema.org's
+  // Person type but nothing about this site needs them, and adding them
+  // would publish personal data that has no reason to be machine-readable.
+  founder: {
+    '@type': 'Person',
+    name: 'Abdul Mannan',
+    jobTitle: 'Founder & CEO',
+    url: 'https://abdul-mannan-portfolio-umber.vercel.app/',
+  },
 };
 ---
 

@@ -4,63 +4,112 @@ export const prerender = true;
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionHeading from '@/components/SectionHeading.astro';
 import Button from '@/components/Button.astro';
+import Card from '@/components/Card.astro';
 import Lock from '@/components/icons/Lock.astro';
 import Server from '@/components/icons/Server.astro';
-import Globe from '@/components/icons/Globe.astro';
 import Shield from '@/components/icons/Shield.astro';
+import AlertTriangle from '@/components/icons/AlertTriangle.astro';
+import GraduationCap from '@/components/icons/GraduationCap.astro';
+import Cloud from '@/components/icons/Cloud.astro';
 import CheckCircle from '@/components/icons/CheckCircle.astro';
 
+// DRAFT — entire catalogue below is placeholder copy pending owner review.
+// Nothing here should be treated as a final commitment until reviewed:
+// cut anything that can't actually be delivered today. No certifications,
+// client names, case studies, years-in-business, team size, or compliance
+// accreditations are claimed anywhere in this file — none of that is
+// verified information, so none of it is invented here either.
 const services = [
   {
     icon: Lock,
-    title: 'Vulnerability Assessments',
+    title: 'Penetration Testing',
+    scope: 'Web, API, network, mobile',
     description:
-      'A structured look at your systems from an attacker\'s perspective — networks, endpoints, and applications.',
-    includes: [
-      'Automated and manual testing',
-      'Findings ranked by real-world impact',
-      'A remediation plan your team can actually act on',
+      'Hands-on testing that simulates a real attacker going after your web apps, APIs, network perimeter, or mobile apps — not just an automated scan with a report stapled to it.',
+    deliverables: [
+      'A written report with findings ranked by real-world exploitability, not raw scanner severity',
+      'Step-by-step reproduction for every confirmed finding',
+      'A debrief call to walk through results and prioritization',
     ],
+    engagement:
+      'Starts with a scoping call to agree on targets and rules of engagement, followed by a fixed testing window and a written report with a debrief.',
   },
   {
     icon: Server,
-    title: 'Infrastructure Hardening',
+    title: 'Security Assessment & Configuration Review',
+    scope: 'Servers, networks, cloud environments',
     description:
-      'Configuration review and hardening for servers, networks, and cloud environments so common misconfigurations stop being an easy win for attackers.',
-    includes: [
-      'Server and network configuration review',
-      'Cloud environment hardening',
-      'Baseline security policies',
+      'A structured review of how your systems are actually configured — server hardening, network segmentation, access controls — looking for the misconfigurations that turn a minor bug into a major breach.',
+    deliverables: [
+      'A configuration findings report mapped to the specific systems reviewed',
+      'Concrete hardening recommendations, not generic best-practice lists',
+      'A prioritized list of what to fix first',
     ],
+    engagement:
+      'Scoped to the systems and environments you specify; typically a review window plus a written report.',
   },
   {
-    icon: Globe,
-    title: 'Web Application Security',
+    icon: AlertTriangle,
+    title: 'Vulnerability Assessment',
+    scope: 'Networks, endpoints, applications',
     description:
-      'Assessments focused on the applications your customers and staff use every day — login flows, forms, APIs, and admin panels.',
-    includes: [
-      'OWASP-aligned application testing',
-      'Authentication and session review',
-      'API security assessment',
+      'A broader, less invasive sweep than a full penetration test — identifying known vulnerabilities across your systems so you know what exists before deciding what needs deeper testing.',
+    deliverables: [
+      'An inventory of identified vulnerabilities with severity ratings',
+      'Guidance on which findings warrant a full penetration test',
+      'A remediation-priority list',
     ],
+    engagement:
+      'Typically a shorter, lower-touch engagement than penetration testing — useful as a first pass or a recurring check.',
   },
   {
     icon: Shield,
     title: 'Incident Response',
+    scope: 'Triage, containment, recovery support',
     description:
-      'When something goes wrong, you need a clear plan and a steady hand — not a scramble.',
-    includes: [
+      'When something has already gone wrong, you need triage and containment first, root-cause analysis second, and a plan to stop it happening again third — in that order.',
+    deliverables: [
       'Incident triage and containment support',
-      'Root-cause investigation',
+      'A root-cause investigation and timeline of what happened',
       'Post-incident hardening recommendations',
     ],
+    engagement:
+      'Time-sensitive and scoped to the incident at hand; exact response times and availability to be confirmed before this is offered as a committed service.',
+  },
+  {
+    icon: GraduationCap,
+    title: 'Security Awareness Training & Phishing Simulation',
+    scope: 'Staff training, simulated phishing campaigns',
+    description:
+      "Most breaches start with a person, not a system. This is training built around how your team actually works, paired with simulated phishing campaigns to measure whether it's landing.",
+    deliverables: [
+      'Training sessions covering the risks most relevant to your team',
+      'A simulated phishing campaign with results broken down by team or department',
+      'A follow-up report showing where awareness gaps remain',
+    ],
+    engagement:
+      'Delivered as a single session or an ongoing program, depending on what your team needs — scope to be agreed upfront.',
+  },
+  {
+    icon: Cloud,
+    title: 'Cloud Security Posture Review',
+    scope: 'AWS, Azure, GCP, and similar environments',
+    description:
+      'A review of how your cloud environment is actually set up — identity and access permissions, storage exposure, network configuration — against what it should be, not a generic checklist.',
+    deliverables: [
+      'A findings report mapped to the specific cloud services in use',
+      'Identity and access misconfigurations flagged by actual exposure, not just deviation from default',
+      'A prioritized remediation list',
+    ],
+    engagement:
+      'Scoped to the specific cloud accounts and services you grant access to for the review.',
   },
 ];
 ---
 
 <BaseLayout
   title="Services"
-  description="Vulnerability assessments, infrastructure hardening, web application security, and incident response from VantriqSec."
+  description="Penetration testing, security assessments, vulnerability assessments, incident response, security awareness training, and cloud security posture reviews from VantriqSec."
 >
   <section class="border-b border-surface-800 bg-surface-950">
     <div class="mx-auto max-w-4xl px-6 py-20 text-center">
@@ -70,33 +119,59 @@ const services = [
         description="Every engagement ends with findings you can prioritize and act on — not a report that sits unread."
         align="center"
       />
+      <p class="mx-auto mt-6 max-w-2xl rounded-md border border-feedback-warning/40 bg-feedback-warning/10 px-4 py-3 text-sm text-feedback-warning">
+        <strong class="font-semibold">Draft catalogue — pending review.</strong>
+        The services below are being scoped out. Anything we can't actually
+        deliver today will be cut before this goes live.
+      </p>
     </div>
   </section>
 
   <section class="mx-auto max-w-5xl px-6 py-20">
     <div class="space-y-16">
       {
-        services.map(({ icon: Icon, title, description, includes }) => (
+        services.map(({ icon: Icon, title, scope, description, deliverables, engagement }) => (
           <div class="grid gap-8 sm:grid-cols-3">
             <div>
               <Icon class="h-8 w-8 text-brand-500" />
               <h2 class="mt-4 text-2xl font-bold text-text-primary">{title}</h2>
+              <p class="mt-1 text-sm text-text-muted">{scope}</p>
             </div>
             <div class="sm:col-span-2">
               <p class="text-text-secondary">{description}</p>
-              <ul class="mt-4 space-y-2">
-                {includes.map((item) => (
+
+              <h3 class="mt-6 text-sm font-semibold uppercase tracking-wide text-text-muted">
+                What you get
+              </h3>
+              <ul class="mt-3 space-y-2">
+                {deliverables.map((item) => (
                   <li class="flex items-start gap-2 text-sm text-text-secondary">
                     <CheckCircle class="mt-0.5 h-4 w-4 shrink-0 text-feedback-success" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
+
+              <h3 class="mt-6 text-sm font-semibold uppercase tracking-wide text-text-muted">
+                Typical engagement
+              </h3>
+              <p class="mt-2 text-sm text-text-secondary">{engagement}</p>
             </div>
           </div>
         ))
       }
     </div>
+
+    <Card class="mt-16 text-center">
+      <p class="text-sm font-semibold uppercase tracking-wide text-text-muted">
+        Placeholder — social proof
+      </p>
+      <p class="mt-2 text-text-secondary">
+        Case studies, client outcomes, and any relevant certifications will go
+        here once we have real ones to show. Nothing is listed here yet
+        because nothing here has been verified.
+      </p>
+    </Card>
   </section>
 
   <section class="border-t border-surface-800 bg-surface-900">

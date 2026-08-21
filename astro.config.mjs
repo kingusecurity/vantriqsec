@@ -9,15 +9,17 @@ export default defineConfig({
   site: SITE_URL,
   output: 'server',
   adapter: cloudflare({
-    // The site never uses <Image>/getImage() — every icon is hand-
-    // vendored SVG and og.png is pre-generated as a static file. This is
-    // the adapter's OWN imageService option, separate from Astro core's
-    // `image.service` — the adapter defaults this to 'cloudflare-binding'
-    // regardless of Astro core's image config, which silently provisions
-    // an unused Cloudflare Images binding otherwise (confirmed by reading
-    // the adapter's source: needsImagesBinding is computed purely from
-    // this option, not from checking Astro's own image.service first).
-    imageService: 'passthrough',
+    // Every page is fully prerendered, so any <Image>/<Picture> usage is
+    // resolved entirely at `astro build` time into static output files —
+    // no Cloudflare Images binding is ever needed at runtime. The compound
+    // form opts in to that build-time compilation (`build: 'compile'`,
+    // confirmed via the adapter's own image-config types: the bare string
+    // form `'passthrough'` sets `transformAtBuild: false` and would leave
+    // <Image>/<Picture> as a no-op passthrough of the original file) while
+    // `runtime: 'passthrough'` keeps the deployed Worker free of any
+    // Cloudflare Images binding — this project has no non-prerendered
+    // routes that would ever hit the runtime image endpoint anyway.
+    imageService: { build: 'compile', runtime: 'passthrough' },
   }),
   integrations: [sitemap()],
   // Never uses Astro's session API. Without this, the adapter

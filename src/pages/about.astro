@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 
+import { Picture } from 'astro:assets';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionHeading from '@/components/SectionHeading.astro';
 import Button from '@/components/Button.astro';
@@ -8,6 +9,13 @@ import Card from '@/components/Card.astro';
 import Shield from '@/components/icons/Shield.astro';
 import CheckCircle from '@/components/icons/CheckCircle.astro';
 import AlertTriangle from '@/components/icons/AlertTriangle.astro';
+import founderPhoto from '@/assets/founder/abdul-mannan.png';
+
+const FOUNDER = {
+  name: 'Abdul Mannan',
+  title: 'Founder & CEO',
+  portfolioUrl: 'https://abdul-mannan-portfolio-umber.vercel.app/',
+};
 
 const principles = [
   {
@@ -63,6 +71,52 @@ const principles = [
           </Card>
         ))
       }
+    </div>
+  </section>
+
+  <section class="border-t border-surface-800 bg-surface-950">
+    <div class="mx-auto max-w-4xl px-6 py-20">
+      <SectionHeading eyebrow="Leadership" title="Founder" align="center" />
+      <div class="mt-10 flex flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:gap-8 sm:text-left">
+        <Picture
+          src={founderPhoto}
+          formats={['avif', 'webp']}
+          fallbackFormat="jpg"
+          width={192}
+          height={192}
+          quality={82}
+          loading="lazy"
+          alt={`Portrait of ${FOUNDER.name}, ${FOUNDER.title} of VantriqSec`}
+          class="h-32 w-32 shrink-0 rounded-full border border-surface-800 object-cover sm:h-48 sm:w-48"
+        />
+        <div>
+          <h3 class="text-xl font-semibold text-text-primary">{FOUNDER.name}</h3>
+          <p class="mt-1 text-sm font-semibold uppercase tracking-wide text-brand-500">
+            {FOUNDER.title}
+          </p>
+          <p class="mt-2 inline-block rounded-sm border border-feedback-warning/40 bg-feedback-warning/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-feedback-warning">
+            Draft — bio pending review
+          </p>
+          {
+            /* DRAFT copy — placeholder bio, replace with Abdul's own words before launch. */
+          }
+          <p class="mt-4 text-text-secondary">
+            Abdul founded VantriqSec to bring the same direct, no-nonsense security
+            work that large enterprises get to businesses that are usually priced
+            out of it or ignored entirely. He leads engagements end to end — scoping,
+            testing, and the conversation afterward about what actually matters to
+            fix first.
+          </p>
+          <a
+            href={FOUNDER.portfolioUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-4 inline-block text-sm font-semibold text-brand-500 hover:text-brand-400"
+          >
+            View portfolio →
+          </a>
+        </div>
+      </div>
     </div>
   </section>
 

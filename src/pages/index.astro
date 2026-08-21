@@ -8,23 +8,26 @@ import SectionHeading from '@/components/SectionHeading.astro';
 import Shield from '@/components/icons/Shield.astro';
 import Lock from '@/components/icons/Lock.astro';
 import Server from '@/components/icons/Server.astro';
-import Globe from '@/components/icons/Globe.astro';
+import AlertTriangle from '@/components/icons/AlertTriangle.astro';
 
+// Kept in sync with the full catalogue on /services — this is a 4-item
+// teaser subset of that page's 6 services, not a separate list, so the
+// titles here must match the real service names exactly.
 const highlights = [
   {
     icon: Lock,
-    title: 'Vulnerability Assessments',
-    description: 'Structured testing that finds real weaknesses before attackers do.',
+    title: 'Penetration Testing',
+    description: 'Hands-on testing that finds real weaknesses before attackers do.',
   },
   {
     icon: Server,
-    title: 'Infrastructure Hardening',
+    title: 'Security Assessment & Configuration Review',
     description: 'Configuration reviews and hardening for servers, networks, and cloud environments.',
   },
   {
-    icon: Globe,
-    title: 'Web Application Security',
-    description: 'Assessments focused on the applications your customers actually use.',
+    icon: AlertTriangle,
+    title: 'Vulnerability Assessment',
+    description: 'A broader sweep for known weaknesses across your systems.',
   },
   {
     icon: Shield,
@@ -59,7 +62,7 @@ const highlights = [
     <SectionHeading
       eyebrow="What we do"
       title="Security work that maps to real risk"
-      description="Four core areas cover most of what growing organizations need to reduce their exposure."
+      description="A few of the areas we cover — see the full list of services for everything else."
     />
     <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {
