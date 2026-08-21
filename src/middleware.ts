@@ -6,6 +6,16 @@ const CSP =
   "form-action 'self'; frame-ancestors 'none'; object-src 'none'; frame-src 'none'; " +
   "upgrade-insecure-requests";
 
+// Denies every browser feature this site has no use for. Nothing here
+// requests camera/mic/geolocation/payment/USB/etc., so there's no
+// legitimate feature to leave open — a static marketing site plus a
+// text-only contact form.
+const PERMISSIONS_POLICY =
+  'accelerometer=(), autoplay=(), camera=(), display-capture=(), ' +
+  'encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), ' +
+  'magnetometer=(), microphone=(), midi=(), payment=(), ' +
+  'picture-in-picture=(), publickey-credentials-get=(), usb=()';
+
 export const onRequest = defineMiddleware(async (_context, next) => {
   const response = await next();
 
@@ -14,6 +24,7 @@ export const onRequest = defineMiddleware(async (_context, next) => {
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Permissions-Policy', PERMISSIONS_POLICY);
 
   return response;
 });
