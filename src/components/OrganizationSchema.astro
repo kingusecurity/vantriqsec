@@ -44,6 +44,12 @@ const organizationSchema = {
     name: 'Abdul Mannan',
     jobTitle: 'Founder & CEO',
     url: 'https://abdul-mannan-portfolio-umber.vercel.app/',
+    // A personal GitHub profile is a fact about the person, not the
+    // company — it belongs on the Person, not the Organization's own
+    // sameAs. kingusecurity/vantriqsec itself is private (404 to a
+    // logged-out request), so the profile is the one GitHub URL that
+    // actually resolves.
+    sameAs: ['https://github.com/kingusecurity'],
   },
 };
 ---
