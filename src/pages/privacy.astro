@@ -1,0 +1,86 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+---
+
+<BaseLayout
+  title="Privacy"
+  description="What VantriqSec collects through the contact form, why, where it's stored, and how to ask for it to be deleted."
+>
+  <section class="mx-auto max-w-3xl px-6 py-20">
+    <SectionHeading
+      eyebrow="Privacy"
+      title="What happens to the information you send us"
+    />
+    <p class="mt-6 text-text-secondary">
+      This describes what actually happens when you use the contact form on
+      this site — not a legal policy, just an accurate account of our own
+      data practice.
+    </p>
+
+    <div class="mt-10 space-y-8">
+      <div>
+        <h2 class="text-lg font-semibold text-text-primary">What we collect</h2>
+        <p class="mt-2 text-sm text-text-secondary">
+          When you submit the contact form, we collect the name and email
+          address you provide, the message itself, and the IP address your
+          request came from.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-semibold text-text-primary">Why</h2>
+        <p class="mt-2 text-sm text-text-secondary">
+          Your name, email, and message are used to read and respond to
+          what you sent. The IP address is used only to limit automated
+          spam and abuse of the form — it isn't used for anything else.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-semibold text-text-primary">Where it's stored</h2>
+        <p class="mt-2 text-sm text-text-secondary">
+          Submissions are stored in Turso, a hosted database provider. A
+          copy of your name, email, and message is also sent to us as a
+          notification email through Resend, an email delivery provider.
+          The site itself runs on Cloudflare, which — like any web host —
+          processes standard connection information (including IP
+          addresses) to serve the page at all. These three providers are
+          the only parties involved in running this site; none of them
+          are given your information for any purpose beyond what's
+          described here.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-semibold text-text-primary">How long it's kept</h2>
+        <p class="mt-2 text-sm text-text-secondary">
+          Right now, indefinitely — there's no automatic deletion process
+          in place yet. If you'd like your submission removed sooner, see
+          "Requesting deletion" below.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-semibold text-text-primary">Who can see it</h2>
+        <p class="mt-2 text-sm text-text-secondary">
+          Only VantriqSec. Your information is never sold or shared with
+          any third party beyond the infrastructure providers named above,
+          who process it solely to make the site and the notification
+          email work.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-semibold text-text-primary">Requesting deletion</h2>
+        <p class="mt-2 text-sm text-text-secondary">
+          Email <a href="mailto:hello@vantriqsec.com" class="text-brand-500 hover:text-brand-400">hello@vantriqsec.com</a>
+          and ask. There's no self-service deletion tool yet, so this is
+          handled manually on request.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
