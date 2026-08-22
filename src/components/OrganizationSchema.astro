@@ -38,7 +38,9 @@ const organizationSchema = {
   founder: {
     '@type': 'Person',
     name: 'Abdul Mannan',
-    jobTitle: 'Founder & CEO',
+    // "CEO" asserts a formal corporate officer role; the business isn't
+    // registered yet, so this stays "Founder" until it is.
+    jobTitle: 'Founder',
     url: 'https://abdul-mannan-portfolio-umber.vercel.app/',
     // A personal GitHub profile is a fact about the person, not the
     // company — it belongs on the Person, not the Organization's own
