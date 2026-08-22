@@ -7,18 +7,18 @@ import Button from '@/components/Button.astro';
 import Card from '@/components/Card.astro';
 import Lock from '@/components/icons/Lock.astro';
 import Server from '@/components/icons/Server.astro';
-import Shield from '@/components/icons/Shield.astro';
 import AlertTriangle from '@/components/icons/AlertTriangle.astro';
+import Shield from '@/components/icons/Shield.astro';
 import GraduationCap from '@/components/icons/GraduationCap.astro';
-import Cloud from '@/components/icons/Cloud.astro';
 import CheckCircle from '@/components/icons/CheckCircle.astro';
 
-// DRAFT — entire catalogue below is placeholder copy pending owner review.
-// Nothing here should be treated as a final commitment until reviewed:
-// cut anything that can't actually be delivered today. No certifications,
-// client names, case studies, years-in-business, team size, or compliance
-// accreditations are claimed anywhere in this file — none of that is
-// verified information, so none of it is invented here either.
+// Reflects what's actually deliverable today, per the owner's direct
+// confirmation (2026-08-22 launch pass). No certifications, client
+// names, case studies, years-in-business, team size, or compliance
+// accreditations are claimed anywhere in this file. Cloud Security
+// Posture Review (AWS/Azure/GCP) was removed entirely rather than
+// listed and declined — it's contingent on a future hire, not
+// deliverable now.
 const services = [
   {
     icon: Lock,
@@ -63,6 +63,25 @@ const services = [
       'Typically a shorter, lower-touch engagement than penetration testing — useful as a first pass or a recurring check.',
   },
   {
+    icon: GraduationCap,
+    title: 'Security Awareness Training',
+    scope: 'Live session for non-technical staff',
+    // Grounded directly in the existing, sourced training deck — not
+    // a description of a capability that doesn't exist yet. "Phishing
+    // simulation" (running a live simulated campaign against a
+    // client's staff) is a separate capability with no evidence it
+    // exists here, so it isn't claimed.
+    description:
+      'A 60-minute live session for non-technical staff, covering phishing, business email compromise, ransomware, social engineering, passwords and MFA, safe browsing, remote and mobile working, and incident response — with a knowledge check at the end. Examples are localized for Pakistani businesses.',
+    deliverables: [
+      'A complete 60-minute live training session delivered to your team',
+      'A knowledge check at the end to confirm the material landed',
+      'Real-world examples localized for a Pakistani business context',
+    ],
+    engagement:
+      'Delivered as a single live session, in person or remote, scheduled directly with your team.',
+  },
+  {
     icon: Shield,
     title: 'Incident Response',
     scope: 'Triage, containment, recovery support',
@@ -73,43 +92,17 @@ const services = [
       'A root-cause investigation and timeline of what happened',
       'Post-incident hardening recommendations',
     ],
+    // States real capacity rather than implying round-the-clock
+    // coverage: two people, business hours, explicit timezone.
     engagement:
-      'Time-sensitive and scoped to the incident at hand; exact response times and availability to be confirmed before this is offered as a committed service.',
-  },
-  {
-    icon: GraduationCap,
-    title: 'Security Awareness Training & Phishing Simulation',
-    scope: 'Staff training, simulated phishing campaigns',
-    description:
-      "Most breaches start with a person, not a system. This is training built around how your team actually works, paired with simulated phishing campaigns to measure whether it's landing.",
-    deliverables: [
-      'Training sessions covering the risks most relevant to your team',
-      'A simulated phishing campaign with results broken down by team or department',
-      'A follow-up report showing where awareness gaps remain',
-    ],
-    engagement:
-      'Delivered as a single session or an ongoing program, depending on what your team needs — scope to be agreed upfront.',
-  },
-  {
-    icon: Cloud,
-    title: 'Cloud Security Posture Review',
-    scope: 'AWS, Azure, GCP, and similar environments',
-    description:
-      'A review of how your cloud environment is actually set up — identity and access permissions, storage exposure, network configuration — against what it should be, not a generic checklist.',
-    deliverables: [
-      'A findings report mapped to the specific cloud services in use',
-      'Identity and access misconfigurations flagged by actual exposure, not just deviation from default',
-      'A prioritized remediation list',
-    ],
-    engagement:
-      'Scoped to the specific cloud accounts and services you grant access to for the review.',
+      "Response during business hours (9am–6pm PKT). We're a two-person team, not a round-the-clock SOC — if a situation needs 24/7 coverage, we'll tell you plainly rather than overpromise.",
   },
 ];
 ---
 
 <BaseLayout
   title="Services"
-  description="Penetration testing, security assessments, vulnerability assessments, incident response, security awareness training, and cloud security posture reviews from VantriqSec."
+  description="Penetration testing, security assessments, vulnerability assessments, security awareness training, and incident response from VantriqSec."
 >
   <section class="border-b border-surface-800 bg-surface-950">
     <div class="mx-auto max-w-4xl px-6 py-20 text-center">
@@ -119,11 +112,6 @@ const services = [
         description="Every engagement ends with findings you can prioritize and act on — not a report that sits unread."
         align="center"
       />
-      <p class="mx-auto mt-6 max-w-2xl rounded-md border border-feedback-warning/40 bg-feedback-warning/10 px-4 py-3 text-sm text-feedback-warning">
-        <strong class="font-semibold">Draft catalogue — pending review.</strong>
-        The services below are being scoped out. Anything we can't actually
-        deliver today will be cut before this goes live.
-      </p>
     </div>
   </section>
 
@@ -167,9 +155,9 @@ const services = [
         Placeholder — social proof
       </p>
       <p class="mt-2 text-text-secondary">
-        Case studies, client outcomes, and any relevant certifications will go
-        here once we have real ones to show. Nothing is listed here yet
-        because nothing here has been verified.
+        Case studies and client outcomes will go here once we have ones we
+        can publish. Consulting work is often not publicly attributable,
+        so this may stay general even as engagements happen.
       </p>
     </Card>
   </section>
