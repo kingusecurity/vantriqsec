@@ -13,8 +13,15 @@ const resend = new Resend(env.RESEND_API_KEY);
  * durably stored in Turso before this runs, so a failure here is
  * logged and swallowed rather than propagated — a Resend outage must
  * never cause a lost lead or a failed request for the visitor.
+ *
+ * submissionId is logged on failure instead of the submitter/recipient
+ * email so the row can still be looked up in Turso for troubleshooting
+ * without writing an email address into Worker logs.
  */
-export async function sendContactNotification(input: ContactInput): Promise<void> {
+export async function sendContactNotification(
+  input: ContactInput,
+  submissionId: bigint | undefined
+): Promise<void> {
   const toEmail = env.CONTACT_TO_EMAIL;
 
   try {
@@ -29,10 +36,10 @@ export async function sendContactNotification(input: ContactInput): Promise<void
     if (error) {
       // Resend returns API errors in the response body rather than throwing.
       console.error('Resend rejected the contact notification email:', {
-        timestamp: new Date().toISOString(),
-        to: toEmail,
-        submitterEmail: input.email,
-        error,
+        event: 'resend_rejected',
+        submissionId: submissionId !== undefined ? String(submissionId) : 'unknown',
+        errorType: error.name,
+        errorCode: error.statusCode,
       });
     }
   } catch (error) {
@@ -40,10 +47,9 @@ export async function sendContactNotification(input: ContactInput): Promise<void
     // in Turso before this runs (see api/contact.ts), so this is logged
     // and swallowed rather than surfaced to the visitor.
     console.error('Failed to send contact notification email:', {
-      timestamp: new Date().toISOString(),
-      to: toEmail,
-      submitterEmail: input.email,
-      error,
+      event: 'resend_exception',
+      submissionId: submissionId !== undefined ? String(submissionId) : 'unknown',
+      errorType: error instanceof Error ? error.name : typeof error,
     });
   }
 }

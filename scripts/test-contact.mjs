@@ -85,6 +85,38 @@ async function runNegativeCase(baseUrl, label, payload, expectSubstring) {
   );
 }
 
+// Raw body-size and parse tests — sent before any token/field payload is
+// built, since these are meant to be rejected before validation ever
+// runs (F-01: the body-size gate sits ahead of JSON.parse in contact.ts).
+async function runBodySizeCases(baseUrl) {
+  console.log('Body-size / parse cases:');
+
+  // Oversized: well past MAX_BODY_BYTES (32KB) in contact.ts.
+  const oversized = 'a'.repeat(64 * 1024);
+  const oversizedRes = await fetch(`${baseUrl}/api/contact`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: oversized, email: 'a@b.com', message: 'test', company_website: '' }),
+  });
+  log('  Oversized body (413 expected)', oversizedRes.status === 413, `status ${oversizedRes.status}`);
+
+  // Malformed JSON, small body — must reach the parser (400), not be
+  // caught by the size gate (413), proving normal-sized requests pass
+  // the new check and reach the existing validation logic unchanged.
+  const malformedRes = await fetch(`${baseUrl}/api/contact`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{not valid json',
+  });
+  log(
+    '  Malformed JSON, small body (400 expected, not 413)',
+    malformedRes.status === 400,
+    `status ${malformedRes.status}`
+  );
+
+  console.log('');
+}
+
 async function main() {
   const { url: baseUrl } = parseArgs(process.argv.slice(2));
   const marker = `smoke-test-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -93,6 +125,8 @@ async function main() {
   const basePayload = { name: 'Smoke Test', email: testEmail, message: testMessage, company_website: '' };
 
   console.log(`Testing ${baseUrl}/api/contact\n`);
+
+  await runBodySizeCases(baseUrl);
 
   // --- Negative cases first, so they run before the rate limiter has
   // seen any successful submissions from this run. ---
