@@ -63,10 +63,26 @@ async function readBodyWithLimit(
   return { ok: true, text: new TextDecoder().decode(combined) };
 }
 
+// Proper media-type comparison, not a substring check: only the part
+// before the first ';' is the media type (parameters like charset
+// follow it), so "application/json; charset=utf-8" is accepted while
+// "text/application/json" or "application/json-malicious" — which a
+// substring/startsWith check would wrongly accept — are correctly
+// rejected as not being an exact application/json media type.
+function isJsonContentType(header: string | null): boolean {
+  if (!header) return false;
+  const mediaType = header.split(';')[0].trim().toLowerCase();
+  return mediaType === 'application/json';
+}
+
 export const POST: APIRoute = async ({ request }) => {
   const bodyResult = await readBodyWithLimit(request, MAX_BODY_BYTES);
   if (!bodyResult.ok) {
     return jsonResponse({ error: 'Request body too large.' }, 413);
+  }
+
+  if (!isJsonContentType(request.headers.get('content-type'))) {
+    return jsonResponse({ error: 'Invalid request body.' }, 400);
   }
 
   let payload: unknown;
