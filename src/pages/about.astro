@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 
+import { Picture } from 'astro:assets';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionHeading from '@/components/SectionHeading.astro';
 import Button from '@/components/Button.astro';
@@ -8,19 +9,14 @@ import Card from '@/components/Card.astro';
 import Shield from '@/components/icons/Shield.astro';
 import CheckCircle from '@/components/icons/CheckCircle.astro';
 import AlertTriangle from '@/components/icons/AlertTriangle.astro';
+import founderPhoto from '@/assets/founder/abdul-mannan.png';
 
-// No approved photo yet — see the placeholder slot below. To add one:
-// drop the file in src/assets/founder/, import it here, and replace the
-// placeholder <div> with an astro:assets <Picture> (see git history at
-// commit 0264dcd for the exact markup this project used before). That's
-// the only file that needs to change.
 const FOUNDER = {
   name: 'Abdul Mannan',
   // "CEO" implies formal corporate structure; the business isn't
   // registered yet, so this stays "Founder" until it is.
   title: 'Founder',
   portfolioUrl: 'https://abdul-mannan-portfolio-umber.vercel.app/',
-  initials: 'AM',
 };
 
 const principles = [
@@ -84,29 +80,27 @@ const principles = [
     <div class="mx-auto max-w-4xl px-6 py-20">
       <SectionHeading eyebrow="Leadership" title="Founder" align="center" />
       <div class="mt-10 flex flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:gap-8 sm:text-left">
-        <div
-          class="flex h-32 w-32 shrink-0 items-center justify-center rounded-full border border-dashed border-surface-700 bg-surface-900 sm:h-48 sm:w-48"
-          role="img"
-          aria-label={`Placeholder — photo of ${FOUNDER.name} not yet added`}
-        >
-          <span class="text-3xl font-bold text-text-muted sm:text-4xl">{FOUNDER.initials}</span>
-        </div>
+        <Picture
+          src={founderPhoto}
+          formats={['avif', 'webp']}
+          fallbackFormat="jpg"
+          width={192}
+          height={192}
+          quality={82}
+          loading="lazy"
+          alt="Abdul Mannan"
+          class="h-32 w-32 shrink-0 rounded-full border border-surface-800 object-cover sm:h-48 sm:w-48"
+        />
         <div>
           <h3 class="text-xl font-semibold text-text-primary">{FOUNDER.name}</h3>
           <p class="mt-1 text-sm font-semibold uppercase tracking-wide text-brand-500">
             {FOUNDER.title}
           </p>
-          <p class="mt-2 inline-block rounded-sm border border-feedback-warning/40 bg-feedback-warning/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-feedback-warning">
-            Draft — bio pending review
-          </p>
-          {
-            /* DRAFT copy — placeholder bio, replace with Abdul's own words before launch. */
-          }
           <p class="mt-4 text-text-secondary">
-            Abdul founded VantriqSec to bring the same direct, no-nonsense security
-            work that large enterprises get to businesses that are usually priced
-            out of it or ignored entirely. He leads engagements end to end — scoping,
-            testing, and the conversation afterward about what actually matters to
+            Abdul founded VantriqSec to bring direct, practical security work to
+            businesses that are often priced out of traditional security
+            services. He leads engagements end to end — from scoping and testing
+            through to the conversation afterward about what actually matters to
             fix first.
           </p>
           <a
