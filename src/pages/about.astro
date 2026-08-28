@@ -80,17 +80,19 @@ const principles = [
     <div class="mx-auto max-w-4xl px-6 py-20">
       <SectionHeading eyebrow="Leadership" title="Founder" align="center" />
       <div class="mt-10 flex flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:gap-8 sm:text-left">
-        <Picture
-          src={founderPhoto}
-          formats={['avif', 'webp']}
-          fallbackFormat="jpg"
-          width={192}
-          height={192}
-          quality={82}
-          loading="lazy"
-          alt="Abdul Mannan"
-          class="h-32 w-32 shrink-0 rounded-full border border-surface-800 object-cover sm:h-48 sm:w-48"
-        />
+        <div class="h-32 w-32 shrink-0 overflow-hidden rounded-full border border-surface-800 sm:h-48 sm:w-48">
+          <Picture
+            src={founderPhoto}
+            formats={['avif', 'webp']}
+            fallbackFormat="jpg"
+            width={192}
+            height={192}
+            quality={82}
+            loading="lazy"
+            alt="Abdul Mannan"
+            class="h-full w-full object-cover"
+          />
+        </div>
         <div>
           <h3 class="text-xl font-semibold text-text-primary">{FOUNDER.name}</h3>
           <p class="mt-1 text-sm font-semibold uppercase tracking-wide text-brand-500">
