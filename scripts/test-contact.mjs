@@ -262,6 +262,162 @@ async function submitFull(baseUrl, payload, cfIp) {
   return postContact(baseUrl, { ...payload, contact_token: token }, cfIp);
 }
 
+// Returns null (not throws) on failure — env vars being *set* doesn't
+// mean they point at a reachable database (e.g. .dev.vars's fake
+// placeholder values), and one bad connection shouldn't crash the rest
+// of the suite.
+async function countRowsByEmail(db, email) {
+  try {
+    const result = await db.execute({
+      sql: 'SELECT COUNT(*) as c FROM contact_submissions WHERE email = ?',
+      args: [email],
+    });
+    return Number(result.rows[0]?.c ?? 0);
+  } catch {
+    return null;
+  }
+}
+
+// Best-effort, same caveat as the existing Resend cross-check below:
+// Resend's own "list sends" API may not be perfectly reliable for
+// this. Returns null (not false) when it can't be checked at all, so
+// callers can tell "verified zero/one" apart from "couldn't verify."
+async function countResendSendsSince(toEmail, sinceIso) {
+  if (!process.env.RESEND_API_KEY || !toEmail) return null;
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}` },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data?.data ?? []).filter(
+      (e) => e.to?.includes(toEmail) && e.created_at >= sinceIso
+    ).length;
+  } catch {
+    return null;
+  }
+}
+
+async function runDuplicateDetectionCases(baseUrl) {
+  console.log('F-04 duplicate-detection cases:');
+
+  if (!process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN) {
+    log(
+      '  F-04 cases',
+      null,
+      'SKIPPED — need TURSO_DATABASE_URL/TURSO_AUTH_TOKEN pointed at a ' +
+      'real or disposable test database to insert/verify rows and seed ' +
+      'test data; with the fake placeholder in .dev.vars every ' +
+      'submission fails earlier at the rate-limit check (503) before ' +
+      'F-04 code ever runs, so this cannot be exercised in that state.'
+    );
+    console.log('');
+    return;
+  }
+
+  const db = createClient({
+    url: process.env.TURSO_DATABASE_URL,
+    authToken: process.env.TURSO_AUTH_TOKEN,
+  });
+
+  // Confirm the database is actually reachable before running anything
+  // — env vars being *set* (as .dev.vars's fake placeholders are)
+  // doesn't mean they point at a real, connectable database.
+  try {
+    await db.execute('SELECT 1');
+  } catch (error) {
+    log(
+      '  F-04 cases',
+      null,
+      `SKIPPED — TURSO_DATABASE_URL/TURSO_AUTH_TOKEN are set but not ` +
+      `reachable (${error.message}). This is expected with .dev.vars's ` +
+      `fake placeholder values; point these at a real or disposable ` +
+      `test database to actually run these cases.`
+    );
+    console.log('');
+    return;
+  }
+
+  const startedAt = new Date().toISOString();
+  const toEmail = process.env.CONTACT_TO_EMAIL;
+
+  // Each case uses its own synthetic CF-Connecting-IP (198.51.100.0/24
+  // — IANA TEST-NET-2, reserved for documentation/testing, never a
+  // real address) so unrelated cases don't collide on local dev's
+  // shared 'unknown' fallback and trip the real per-IP limiter against
+  // each other. See postContact's comment for the full reasoning.
+
+  // Case 1: same email + same message twice
+  const m1 = `dup1-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  const e1 = `dup-test+${m1}@example.com`;
+  const msg1 = `Duplicate detection test message. Marker: ${m1}`;
+  const r1a = await submitFull(baseUrl, { name: 'Dup Test', email: e1, message: msg1, company_website: '' }, '198.51.100.11');
+  const r1b = await submitFull(baseUrl, { name: 'Dup Test', email: e1, message: msg1, company_website: '' }, '198.51.100.11');
+  log('  Case 1: same email+message twice, both 200', r1a.status === 200 && r1b.status === 200, `first=${r1a.status} second=${r1b.status}`);
+  const rows1 = await countRowsByEmail(db, e1);
+  log('  Case 1: both DB rows exist', rows1 === 2, `found ${rows1} row(s)`);
+  const sends1 = await countResendSendsSince(toEmail, startedAt);
+  log('  Case 1: only one Resend attempt', sends1 === null ? null : sends1 <= 1, sends1 === null ? "can't verify — RESEND_API_KEY not set" : `${sends1} send(s) to ${toEmail} observed since test start`);
+
+  // Case 2: email casing variation should still match
+  const m2 = `dup2-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  const msg2 = `Case-variation test message. Marker: ${m2}`;
+  const e2Lower = `dup-test+${m2}@example.com`;
+  const e2Mixed = `Dup-Test+${m2}@Example.com`;
+  await submitFull(baseUrl, { name: 'Dup Test', email: e2Lower, message: msg2, company_website: '' }, '198.51.100.12');
+  const r2b = await submitFull(baseUrl, { name: 'Dup Test', email: e2Mixed, message: msg2, company_website: '' }, '198.51.100.12');
+  const sends2 = await countResendSendsSince(`dup-test+${m2}`, startedAt);
+  log('  Case 2: email casing variation treated as duplicate', sends2 === null ? null : sends2 <= 1, `second submission status=${r2b.status}` + (sends2 === null ? ", can't verify send count" : `, ${sends2} send(s) observed`));
+
+  // Case 3: message casing variation should still match
+  const m3 = `dup3-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  const e3 = `dup-test+${m3}@example.com`;
+  const r3a = await submitFull(baseUrl, { name: 'Dup Test', email: e3, message: `Hello World ${m3}`, company_website: '' }, '198.51.100.13');
+  const r3b = await submitFull(baseUrl, { name: 'Dup Test', email: e3, message: `hello world ${m3}`, company_website: '' }, '198.51.100.13');
+  const sends3 = await countResendSendsSince(e3, startedAt);
+  log('  Case 3: message casing variation treated as duplicate', sends3 === null ? null : sends3 <= 1, `both ${r3a.status}/${r3b.status}` + (sends3 === null ? ", can't verify send count" : `, ${sends3} send(s) observed`));
+
+  // Case 4: different email, same message must NOT be a duplicate
+  const m4 = `dup4-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  const msg4 = `Shared message text, different senders. Marker: ${m4}`;
+  const e4a = `dup-test+${m4}-a@example.com`;
+  const e4b = `dup-test+${m4}-b@example.com`;
+  await submitFull(baseUrl, { name: 'Dup Test A', email: e4a, message: msg4, company_website: '' }, '198.51.100.14');
+  await submitFull(baseUrl, { name: 'Dup Test B', email: e4b, message: msg4, company_website: '' }, '198.51.100.14');
+  const sends4 = await countResendSendsSince(`dup-test+${m4}`, startedAt);
+  log('  Case 4: different email, same message — NOT a duplicate (2 sends expected)', sends4 === null ? null : sends4 >= 2, sends4 === null ? "can't verify — RESEND_API_KEY not set" : `${sends4} send(s) observed`);
+
+  // Case 5: same email+message, but the prior row is seeded OUTSIDE the
+  // 60-minute window — must NOT be suppressed. Seeds directly via Turso
+  // rather than waiting 60 real minutes.
+  const m5 = `dup5-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  const e5 = `dup-test+${m5}@example.com`;
+  const msg5 = `Outside-window test message. Marker: ${m5}`;
+  await db.execute({
+    sql: `INSERT INTO contact_submissions (name, email, message, ip, created_at)
+          VALUES (?, ?, ?, ?, datetime('now', '-90 minutes'))`,
+    args: ['Old Dup Test', e5, msg5, 'test-seed'],
+  });
+  const r5 = await submitFull(baseUrl, { name: 'Dup Test', email: e5, message: msg5, company_website: '' }, '198.51.100.15');
+  const sends5 = await countResendSendsSince(e5, startedAt);
+  log('  Case 5: outside 60-minute window — NOT suppressed', r5.status === 200 && (sends5 === null || sends5 >= 1), `status=${r5.status}` + (sends5 === null ? ", can't verify send count" : `, ${sends5} send(s) observed`));
+
+  // Case 6: acceptance scenario from the design review — the exact
+  // legitimate-customer case F-04 must never block.
+  const m6 = `dup6-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  const e6 = `dup-test+${m6}@example.com`;
+  const msg6 = 'Hello, I need a security assessment.';
+  const r6a = await submitFull(baseUrl, { name: 'Real Customer', email: e6, message: msg6, company_website: '' }, '198.51.100.16');
+  const r6b = await submitFull(baseUrl, { name: 'Real Customer', email: e6, message: msg6, company_website: '' }, '198.51.100.16');
+  log('  Case 6: acceptance scenario, both 200 (customer never blocked)', r6a.status === 200 && r6b.status === 200, `first=${r6a.status} second=${r6b.status}`);
+  const rows6 = await countRowsByEmail(db, e6);
+  log('  Case 6: both DB rows exist', rows6 === 2, `found ${rows6} row(s)`);
+  const sends6 = await countResendSendsSince(e6, startedAt);
+  log('  Case 6: only one notification attempt', sends6 === null ? null : sends6 <= 1, sends6 === null ? "can't verify — RESEND_API_KEY not set" : `${sends6} send(s) observed`);
+
+  console.log('');
+}
+
 // ============================================================
 // F-08 continuation: live rate-limit threshold verification,
 // missing-required-field cases, and exact Zod-boundary cases.
@@ -862,6 +1018,9 @@ async function main() {
   } else {
     log('Resend recent sends', null, 'skipped — RESEND_API_KEY not in environment; check the Resend dashboard directly');
   }
+
+  console.log('');
+  await runDuplicateDetectionCases(baseUrl);
 
   await runPerIpRateLimitCase(baseUrl);
   await runGlobalRateLimitCase(baseUrl);

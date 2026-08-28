@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { db } from '@/db/client';
 import { contactSchema } from '@/lib/validateContact';
 import { isRateLimited, isGloballyRateLimited } from '@/lib/rateLimit';
+import { isDuplicateSubmission } from '@/lib/duplicateDetection';
 import { sendContactNotification } from '@/lib/email';
 import { verifyContactToken } from '@/lib/contactToken';
 
@@ -174,8 +175,22 @@ export const POST: APIRoute = async ({ request }) => {
     return jsonResponse({ error: 'Something went wrong. Please try again shortly.' }, 500);
   }
 
+  // F-04: only ever suppresses the notification email — the row above
+  // is already stored and the response below is always 200 either
+  // way. If the check itself fails (infrastructure issue, not "found a
+  // duplicate"), fail open toward sending the notification rather than
+  // silently dropping a real inquiry because of an unrelated hiccup.
+  let duplicate = false;
+  try {
+    duplicate = await isDuplicateSubmission(email, message, insertResult.lastInsertRowid);
+  } catch (error) {
+    console.error('Duplicate check failed, notifying anyway:', error);
+  }
+
   // Best-effort — the submission is already safely stored above.
-  await sendContactNotification(parsed.data, insertResult.lastInsertRowid);
+  if (!duplicate) {
+    await sendContactNotification(parsed.data, insertResult.lastInsertRowid);
+  }
 
   return jsonResponse({ ok: true }, 200);
 };
