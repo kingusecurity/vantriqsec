@@ -9,55 +9,184 @@ import Shield from '@/components/icons/Shield.astro';
 import Lock from '@/components/icons/Lock.astro';
 import Server from '@/components/icons/Server.astro';
 import AlertTriangle from '@/components/icons/AlertTriangle.astro';
+import CheckCircle from '@/components/icons/CheckCircle.astro';
+import Globe from '@/components/icons/Globe.astro';
+
+// TODO(owner): drop your WhatsApp business number here (digits only, with
+// country code, e.g. '923001234567'). It wires the WhatsApp CTAs below.
+const WHATSAPP_NUMBER = '';
+const whatsappLink = (text: string) =>
+  WHATSAPP_NUMBER
+    ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`
+    : '/contact';
 
 // Kept in sync with the full catalogue on /services — this is a 4-item
 // teaser subset of that page's 5 services, not a separate list, so the
 // titles here must match the real service names exactly.
 const highlights = [
   {
+    icon: Shield,
+    title: 'External Security Assessment',
+    description:
+      'Our flagship: an unauthenticated assessment of your internet-facing systems, powered by KingSec — findings, severity, remediation, overall score.',
+    flagship: true,
+  },
+  {
     icon: Lock,
     title: 'Penetration Testing',
     description: 'Hands-on testing that finds real weaknesses before attackers do.',
+    flagship: false,
   },
   {
     icon: Server,
     title: 'Security Assessment & Configuration Review',
     description: 'Configuration reviews and hardening for servers, networks, and cloud environments.',
+    flagship: false,
   },
   {
     icon: AlertTriangle,
     title: 'Vulnerability Assessment',
     description: 'A broader sweep for known weaknesses across your systems.',
+    flagship: false,
+  },
+];
+
+const steps = [
+  {
+    n: '1',
+    title: 'We scope it together',
+    description:
+      "A short call to define what's in scope — your public-facing systems. Nothing behind a login, nothing out of bounds, always a signed scope agreement first.",
   },
   {
-    icon: Shield,
-    title: 'Incident Response',
-    description: 'A clear plan and a steady hand when something goes wrong.',
+    n: '2',
+    title: 'We run the assessment',
+    description:
+      'Our team operates KingSec against your agreed scope: six professional scanners orchestrated into one workflow, findings normalized into a single report.',
+  },
+  {
+    n: '3',
+    title: 'You get evidence, not jargon',
+    description:
+      "A professional report you can hand to your client — executive summary, per-finding evidence, remediation steps your developers can act on before the deadline.",
+  },
+];
+
+const whyUs = [
+  {
+    icon: Globe,
+    title: 'Built here, for here',
+    description:
+      "We're a Lahore company. We understand the questionnaire pressure Pakistani software houses face — because it's our market too.",
+  },
+  {
+    icon: CheckCircle,
+    title: 'Our own platform',
+    description:
+      "KingSec isn't a resold tool — it's our assessment engine, built and operated by our team. Faster turnaround, reports we stand behind.",
+  },
+  {
+    icon: Lock,
+    title: 'Honest scope, always',
+    description:
+      "We assess what's reachable from the outside. We don't test behind logins, we don't touch production data, and every engagement starts with a signed scope agreement.",
   },
 ];
 ---
 
 <BaseLayout
   title="Home"
-  description="VantriqSec provides cybersecurity services to businesses in Pakistan — assessing, hardening, and defending their systems."
+  description="VantriqSec delivers external security assessments powered by KingSec — evidence your foreign clients' security questionnaires demand, with findings your team can act on."
 >
+  <!-- HERO -->
   <section class="border-b border-surface-800 bg-surface-950">
     <div class="mx-auto max-w-6xl px-6 py-24 text-center sm:py-32">
-      <p class="text-sm font-semibold uppercase tracking-wide text-brand-500">VantriqSec</p>
+      <p class="text-sm font-semibold uppercase tracking-wide text-brand-500">
+        Assessments delivered by VantriqSec · Powered by KingSec
+      </p>
       <h1 class="mt-4 text-4xl font-bold sm:text-6xl">
-        Cybersecurity built for how your business actually runs
+        Your client's security questionnaire, answered with evidence.
       </h1>
       <p class="mx-auto mt-6 max-w-2xl text-lg text-text-secondary">
-        We assess, harden, and defend the systems Pakistani businesses depend on every
-        day — with clear findings and remediation plans, not jargon.
+        VantriqSec delivers external security assessments powered by KingSec, our own
+        assessment platform — clear findings, severity ratings, and remediation steps
+        your team can act on before the client's deadline.
       </p>
       <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-        <Button href="/contact" variant="primary">Get in touch</Button>
-        <Button href="/services" variant="secondary">See our services</Button>
+        <Button href="/contact" variant="primary">Get an assessment</Button>
+        <Button href="#sample-report" variant="secondary">See a sample report</Button>
+      </div>
+      {
+        WHATSAPP_NUMBER && (
+          <p class="mt-6 text-sm text-text-muted">
+            Prefer WhatsApp?{' '}
+            <a
+              href={whatsappLink("Hi VantriqSec — I'd like to talk about a security assessment.")}
+              class="font-semibold text-brand-500 hover:text-brand-400"
+            >
+              Chat with us →
+            </a>
+          </p>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- WEDGE: the questionnaire problem -->
+  <section class="mx-auto max-w-6xl px-6 py-24">
+    <SectionHeading
+      eyebrow="Who this is for"
+      title="Your foreign client sent a 200-question security questionnaire. Now what?"
+      description="If you build software for clients in the US, UK, or EU, you've seen it: the vendor security assessment that lands weeks before a deal closes. Most software houses answer it from scratch, under deadline pressure, with no evidence to attach. We built VantriqSec for exactly this moment."
+    />
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      <Card>
+        <h3 class="text-lg font-semibold text-text-primary">Evidence, not assertions</h3>
+        <p class="mt-2 text-sm text-text-secondary">
+          "Describe your vulnerability management process" is answerable when you can
+          attach a real assessment report with dated findings and remediations.
+        </p>
+      </Card>
+      <Card>
+        <h3 class="text-lg font-semibold text-text-primary">Before the deadline</h3>
+        <p class="mt-2 text-sm text-text-secondary">
+          Our platform runs the scanners; our team writes the report. You get
+          turnaround measured in days, not the weeks a traditional pentest takes to schedule.
+        </p>
+      </Card>
+      <Card>
+        <h3 class="text-lg font-semibold text-text-primary">Fixable findings</h3>
+        <p class="mt-2 text-sm text-text-secondary">
+          Every finding ships with what we saw, why it matters, and how to fix it —
+          so your developers can remediate before the client's security team reviews.
+        </p>
+      </Card>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="border-y border-surface-800 bg-surface-900">
+    <div class="mx-auto max-w-6xl px-6 py-24">
+      <SectionHeading
+        eyebrow="How it works"
+        title="Assessments delivered by VantriqSec, powered by KingSec"
+        description="KingSec is our own external security assessment platform — six professional scanners (Nmap, Nuclei, Nikto, FFUF, Gobuster, OWASP ZAP) orchestrated into one workflow."
+      />
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {
+          steps.map(({ n, title, description }) => (
+            <Card>
+              <p class="text-3xl font-bold text-brand-500">{n}</p>
+              <h3 class="mt-4 text-lg font-semibold text-text-primary">{title}</h3>
+              <p class="mt-2 text-sm text-text-secondary">{description}</p>
+            </Card>
+          ))
+        }
       </div>
     </div>
   </section>
 
+  <!-- SERVICES TEASER -->
   <section class="mx-auto max-w-6xl px-6 py-24">
     <SectionHeading
       eyebrow="What we do"
@@ -66,7 +195,49 @@ const highlights = [
     />
     <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {
-        highlights.map(({ icon: Icon, title, description }) => (
+        highlights.map(({ icon: Icon, title, description, flagship }) => (
+          <Card>
+            <Icon class="h-8 w-8 text-brand-500" />
+            <h3 class="mt-4 text-lg font-semibold text-text-primary">
+              {title}
+              {flagship && (
+                <span class="ml-2 rounded-full bg-brand-600/20 px-2 py-0.5 align-middle text-xs font-semibold text-brand-400">
+                  Flagship
+                </span>
+              )}
+            </h3>
+            <p class="mt-2 text-sm text-text-secondary">{description}</p>
+          </Card>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- SAMPLE REPORT -->
+  <section id="sample-report" class="border-y border-surface-800 bg-surface-900">
+    <div class="mx-auto max-w-4xl px-6 py-20 text-center">
+      <SectionHeading
+        eyebrow="Sample report"
+        title="See what your client will see"
+        description="A redacted page from a real KingSec assessment — executive summary, severity breakdown, and a sample finding with remediation steps."
+      />
+      <div class="mt-8">
+        <!-- TODO(owner): replace with a real 2–3 page redacted PDF generated from a
+             KingSec assessment, placed in public/sample-report.pdf -->
+        <Button href="/contact" variant="secondary">Request the full sample</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY US -->
+  <section class="mx-auto max-w-6xl px-6 py-24">
+    <SectionHeading
+      eyebrow="Why VantriqSec"
+      title="A security partner, not a scanner rental"
+    />
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      {
+        whyUs.map(({ icon: Icon, title, description }) => (
           <Card>
             <Icon class="h-8 w-8 text-brand-500" />
             <h3 class="mt-4 text-lg font-semibold text-text-primary">{title}</h3>
@@ -77,14 +248,28 @@ const highlights = [
     </div>
   </section>
 
-  <section class="border-t border-surface-800 bg-surface-900">
+  <!-- CTA -->
+  <section class="border-t border-surface-800 bg-surface-950">
     <div class="mx-auto max-w-4xl px-6 py-20 text-center">
       <h2 class="text-3xl font-bold sm:text-4xl">Not sure where to start?</h2>
       <p class="mx-auto mt-4 max-w-xl text-lg text-text-secondary">
-        Tell us about your environment and we'll recommend where to focus first.
+        Tell us about your environment — or forward us the questionnaire — and we'll
+        recommend where to focus first.
       </p>
-      <div class="mt-8">
-        <Button href="/contact" variant="primary">Talk to us</Button>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+        <Button href="/contact" variant="primary">Get an assessment</Button>
+        {
+          WHATSAPP_NUMBER ? (
+            <Button
+              href={whatsappLink("Hi VantriqSec — I'd like to talk about a security assessment.")}
+              variant="secondary"
+            >
+              WhatsApp us
+            </Button>
+          ) : (
+            <Button href="/contact" variant="secondary">Talk to us</Button>
+          )
+        }
       </div>
     </div>
   </section>

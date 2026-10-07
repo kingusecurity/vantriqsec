@@ -43,7 +43,7 @@ const principles = [
 
 <BaseLayout
   title="About"
-  description="VantriqSec helps Pakistani businesses assess and reduce real security risk, with clear communication and no scare tactics."
+  description="VantriqSec helps Pakistani businesses assess and reduce real security risk — assessments powered by KingSec, our own assessment platform. Clear communication, no scare tactics."
 >
   <section class="border-b border-surface-800 bg-surface-950">
     <div class="mx-auto max-w-3xl px-6 py-20 text-center">
@@ -73,6 +73,41 @@ const principles = [
           </Card>
         ))
       }
+    </div>
+  </section>
+
+  <section class="border-t border-surface-800 bg-surface-900">
+    <div class="mx-auto max-w-4xl px-6 py-20">
+      <SectionHeading
+        eyebrow="Our platform"
+        title="Powered by KingSec"
+        description="KingSec is our own external security assessment platform — six professional scanners (Nmap, Nuclei, Nikto, FFUF, Gobuster, OWASP ZAP) orchestrated into one workflow, producing a single report with findings, severity ratings, supporting evidence, and remediation guidance."
+        align="center"
+      />
+      <div class="mt-10 grid gap-6 sm:grid-cols-2">
+        <Card>
+          <h3 class="text-lg font-semibold text-text-primary">Why we built it</h3>
+          <p class="mt-2 text-sm text-text-secondary">
+            Off-the-shelf scanners produce raw output — thousands of lines that
+            nobody reads. We built KingSec to normalize scanner findings into
+            reports a business owner can understand and a developer can act on:
+            what we found, why it matters, and how to fix it.
+          </p>
+        </Card>
+        <Card>
+          <h3 class="text-lg font-semibold text-text-primary">How we use it</h3>
+          <p class="mt-2 text-sm text-text-secondary">
+            KingSec powers our flagship external security assessment service.
+            Our team operates the platform against your agreed scope — it's the
+            engine behind the assessment, not a product we resell. Every
+            engagement still starts with a scoping call and a signed scope
+            agreement.
+          </p>
+        </Card>
+      </div>
+      <div class="mt-8 text-center">
+        <Button href="/services" variant="secondary">See the assessment service</Button>
+      </div>
     </div>
   </section>
 

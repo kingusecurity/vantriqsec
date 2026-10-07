@@ -21,9 +21,26 @@ import CheckCircle from '@/components/icons/CheckCircle.astro';
 // deliverable now.
 const services = [
   {
+    icon: Shield,
+    title: 'External Security Assessment',
+    scope: 'Internet-facing systems · Powered by KingSec',
+    flagship: true,
+    description:
+      'Our flagship engagement. When your foreign client sends a 200-question security questionnaire, this is the evidence you attach. We run KingSec — our own assessment platform, six professional scanners orchestrated into one workflow — against your agreed scope, and deliver a professional report with findings, severity ratings, supporting evidence, and a remediation plan your developers can act on before the deadline.',
+    deliverables: [
+      'A professional PDF report: executive summary, per-finding evidence, severity ratings, and an overall security score',
+      'A remediation plan prioritized by real risk, not raw scanner output',
+      'Questionnaire-ready evidence — findings and remediations you can reference directly in vendor security assessments',
+      'A debrief call to walk through results and next steps',
+    ],
+    engagement:
+      'Starts with a scoping call to agree on targets (your public-facing systems — nothing behind a login, nothing out of bounds, always a signed scope agreement). Assessment runs over days, not weeks, followed by the written report and a debrief.',
+  },
+  {
     icon: Lock,
     title: 'Penetration Testing',
     scope: 'Web, API, network, mobile',
+    flagship: false,
     description:
       'Hands-on testing that simulates a real attacker going after your web apps, APIs, network perimeter, or mobile apps — not just an automated scan with a report stapled to it.',
     deliverables: [
@@ -38,6 +55,7 @@ const services = [
     icon: Server,
     title: 'Security Assessment & Configuration Review',
     scope: 'Servers, networks, cloud environments',
+    flagship: false,
     description:
       'A structured review of how your systems are actually configured — server hardening, network segmentation, access controls — looking for the misconfigurations that turn a minor bug into a major breach.',
     deliverables: [
@@ -52,6 +70,7 @@ const services = [
     icon: AlertTriangle,
     title: 'Vulnerability Assessment',
     scope: 'Networks, endpoints, applications',
+    flagship: false,
     description:
       'A broader, less invasive sweep than a full penetration test — identifying known vulnerabilities across your systems so you know what exists before deciding what needs deeper testing.',
     deliverables: [
@@ -66,6 +85,7 @@ const services = [
     icon: GraduationCap,
     title: 'Security Awareness Training',
     scope: 'Live session for non-technical staff',
+    flagship: false,
     // Grounded directly in the existing, sourced training deck — not
     // a description of a capability that doesn't exist yet. "Phishing
     // simulation" (running a live simulated campaign against a
@@ -85,6 +105,7 @@ const services = [
     icon: Shield,
     title: 'Incident Response',
     scope: 'Triage, containment, recovery support',
+    flagship: false,
     description:
       'When something has already gone wrong, you need triage and containment first, root-cause analysis second, and a plan to stop it happening again third — in that order.',
     deliverables: [
@@ -102,14 +123,14 @@ const services = [
 
 <BaseLayout
   title="Services"
-  description="Penetration testing, security assessments, vulnerability assessments, security awareness training, and incident response from VantriqSec."
+  description="External security assessments powered by KingSec, penetration testing, configuration reviews, vulnerability assessments, security awareness training, and incident response from VantriqSec."
 >
   <section class="border-b border-surface-800 bg-surface-950">
     <div class="mx-auto max-w-4xl px-6 py-20 text-center">
       <SectionHeading
         eyebrow="Services"
         title="Security work that fits how you actually operate"
-        description="Every engagement ends with findings you can prioritize and act on — not a report that sits unread."
+        description="Led by our flagship KingSec-powered external assessment — every engagement ends with findings you can prioritize and act on, not a report that sits unread."
         align="center"
       />
     </div>
@@ -118,11 +139,23 @@ const services = [
   <section class="mx-auto max-w-5xl px-6 py-20">
     <div class="space-y-16">
       {
-        services.map(({ icon: Icon, title, scope, description, deliverables, engagement }) => (
-          <div class="grid gap-8 sm:grid-cols-3">
+        services.map(({ icon: Icon, title, scope, description, deliverables, engagement, flagship }) => (
+          <div
+            class:list={[
+              'grid gap-8 sm:grid-cols-3 rounded-xl p-6',
+              flagship && 'border border-brand-600/40 bg-brand-600/5',
+            ]}
+          >
             <div>
               <Icon class="h-8 w-8 text-brand-500" />
-              <h2 class="mt-4 text-2xl font-bold text-text-primary">{title}</h2>
+              <h2 class="mt-4 text-2xl font-bold text-text-primary">
+                {title}
+                {flagship && (
+                  <span class="ml-2 rounded-full bg-brand-600/20 px-2 py-0.5 align-middle text-xs font-semibold text-brand-400">
+                    Flagship
+                  </span>
+                )}
+              </h2>
               <p class="mt-1 text-sm text-text-muted">{scope}</p>
             </div>
             <div class="sm:col-span-2">
